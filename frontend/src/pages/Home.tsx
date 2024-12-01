@@ -159,9 +159,7 @@ const Home = () => {
           {categories.map((category, index) => (
             <button
               key={index}
-              className={`category-btn ${
-                selectedCategory === category.name.toLowerCase() ? "selected" : ""
-              }`}
+              className={`category-btn ${selectedCategory === category.name.toLowerCase() ? "selected" : ""}`}
               onClick={() => setSelectedCategory(category.name.toLowerCase())}
             >
               {category.icon} {category.name}
@@ -170,10 +168,31 @@ const Home = () => {
         </div>
       </nav>
 
-      {/* Filter Section */}
-      <section className="filter-section">
-        <h2>Filters</h2>
+      {/* Banner with Image Slides */}
+      <section className="banner">
+        <div className="banner-slider">
+          <FaArrowLeft
+            className="slider-arrow left"
+            onClick={() => handleImageChange("prev")}
+          />
+          <img
+            src={`/images/slider${currentImageIndex + 1}.jpg`}
+            alt="Banner"
+            className="banner-image"
+          />
+          <FaArrowRight
+            className="slider-arrow right"
+            onClick={() => handleImageChange("next")}
+          />
+        </div>
+        <h2>Discover Top Services</h2>
+        <p>Find the best professionals for your needs</p>
+      </section>
+
+      {/* Services Section */}
+      <section id="services" className="services-section">
         <div className="filters-container">
+          {/* Filtros dentro da seção de serviços */}
           <div className="filter-item">
             <label>Price</label>
             <input
@@ -217,32 +236,8 @@ const Home = () => {
             />
           </div>
         </div>
-      </section>
 
-      {/* Banner with Image Slides */}
-      <section className="banner">
-        <div className="banner-slider">
-          <FaArrowLeft
-            className="slider-arrow left"
-            onClick={() => handleImageChange("prev")}
-          />
-          <img
-            src={`/images/slider${currentImageIndex + 1}.jpg`}
-            alt="Banner"
-            className="banner-image"
-          />
-          <FaArrowRight
-            className="slider-arrow right"
-            onClick={() => handleImageChange("next")}
-          />
-        </div>
-        <h2>Discover Top Services</h2>
-        <p>Find the best professionals for your needs</p>
-      </section>
-
-      {/* Services Section */}
-      <section id="services" className="services-section">
-        <h2>Popular Services</h2>
+        {/* Lista de Serviços */}
         <div className="services-grid">
           {services.map((service, index) => (
             <div className="service-card" key={index}>
@@ -270,16 +265,16 @@ const Home = () => {
                   {[...Array(5)].map((_, idx) => (
                     <FaStar
                       key={idx}
-                      color={idx < service.rating ? "gold" : "lightgray"}
+                      className={`star ${idx < Math.floor(service.rating) ? "filled" : ""}`}
                     />
                   ))}
-                  <span className="rating-count">
-                    {service.rating} ({service.reviewsCount.toLocaleString()})
-                  </span>
                 </div>
-              </div>
-              <div className="service-actions">
-                <button className="view-details-btn">View Details</button>
+                <div className="review-count">
+                  <span>{service.reviewsCount} reviews</span>
+                </div>
+
+                {/* "Hire Now" button */}
+                <button className="hire-now-btn">Hire Now</button>
               </div>
             </div>
           ))}
@@ -288,20 +283,12 @@ const Home = () => {
 
       {/* Footer */}
       <footer className="footer">
-        <div className="social-links">
-          <a href="https://facebook.com" className="social-icon">
-            <FaFacebook />
-          </a>
-          <a href="https://twitter.com" className="social-icon">
-            <FaTwitter />
-          </a>
-          <a href="https://instagram.com" className="social-icon">
-            <FaInstagram />
-          </a>
+        <div className="social-icons">
+          <FaFacebook />
+          <FaTwitter />
+          <FaInstagram />
         </div>
-        <div className="footer-info">
-          <p>© 2024 Your Platform</p>
-        </div>
+        <p>© 2024 Your Company. All rights reserved.</p>
       </footer>
     </div>
   );
