@@ -28,26 +28,24 @@ body {
 
 /* Header */
 .header {
-    display: flex;
-    justify-content: space-between; /* Mantém os botões nas extremidades */
-    align-items: center;
-    margin-bottom: 2rem;
-    position: relative; /* Para permitir o posicionamento absoluto do título */
+  display: flex;
+  justify-content: space-between; /* Mantém os botões nas extremidades */
+  align-items: center;
+  margin-bottom: 2rem;
 }
 
 .header h1 {
-    font-size: 2rem;
-    color: #333;
-    position: absolute; /* Permite centralizar o título */
-    left: 50%; /* Move o título para o meio */
-    transform: translateX(-50%); /* Centraliza o título */
+  font-size: 2rem;
+  color: #333;
+  flex-grow: 1; /* Faz o título ocupar o espaço restante */
+  text-align: center; /* Centraliza o título */
 }
 
 .back-btn, .logout-btn {
-    background-color: transparent;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
+  background-color: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
 }
 
 /* Adicionando estilos para os botões */
@@ -343,19 +341,22 @@ body {
     }
 
     .header {
-        display: flex; /* Usa flexbox para o cabeçalho */
-        justify-content: space-between; /* Espaça os itens do cabeçalho */
-        align-items: center; /* Alinha verticalmente os itens */
-        margin-bottom: 1.5rem;
-        text-align: center; /* Centraliza o texto no cabeçalho */
-    }
+      flex-direction: row; /* Garante que os botões fiquem lado a lado */
+      justify-content: space-between; /* Espaça os botões uniformemente */
+      align-items: center; /* Alinha verticalmente os itens */
+      margin-bottom: 1.5rem;
+  }
 
-    .header h1 {
-        font-size: 1.6rem;
-        margin: 0; /* Remove margens para melhor alinhamento */
-        flex: 1; /* Faz o título ocupar o espaço restante */
-    }
+  .header h1 {
+      font-size: 1.6rem; /* Tamanho do título em dispositivos móveis */
+      margin: 0; /* Remove margens para melhor alinhamento */
+  }
 
+  .back-btn,
+  .logout-btn {
+      font-size: 1rem; /* Tamanho menor para dispositivos móveis */
+      padding: 0.3rem; /* Diminui o padding para botões menores */
+  }
     .button-container {
         display: flex; /* Usa flexbox para alinhar os botões */
         justify-content: space-between; /* Espaça os botões uniformemente */

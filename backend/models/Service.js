@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const serviceSchema = new mongoose.Schema({
-  provider: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },  // Referência ao provedor do serviço
+  provider: { type: mongoose.Schema.Types.ObjectId, ref: 'User ', required: true },  // Referência ao provedor do serviço
   pricePerHour: { type: Number, required: true },  // Preço por hora
   images: [{ type: String }],  // Imagens (até 5 imagens)
   category: { type: String, required: true },  // Categoria predefinida do serviço
@@ -20,7 +20,7 @@ const serviceSchema = new mongoose.Schema({
     default: 'paid',
   },
   ratings: [{
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },  // Usuário que fez a avaliação
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User ', required: true },  // Usuário que fez a avaliação
     rating: { type: Number, required: true, min: 1, max: 5 },  // Avaliação de 1 a 5
     comment: { type: String, required: false },  // Comentário da avaliação
     createdAt: { type: Date, default: Date.now }  // Data da avaliação
@@ -31,6 +31,7 @@ const serviceSchema = new mongoose.Schema({
   deletedAt: { type: Date, default: null },  // Para rastrear a exclusão
 });
 
+// Índice para expiração de documentos
 serviceSchema.index({ deletedAt: 1 }, { expireAfterSeconds: 1296000 });  // Expira após 15 dias
 
 // Método para calcular a média das avaliações
@@ -44,12 +45,13 @@ serviceSchema.methods.calculateAverageRating = function () {
   return average;
 };
 
-// Middleware para atualizar a média das avaliações antes de salvar
+// Middleware para atualizar a média das avaliações e a data de atualização antes de salvar
 serviceSchema.pre('save', function (next) {
   this.averageRating = this.calculateAverageRating();
+  this.updatedAt = Date.now(); // Atualiza a data de atualização
   next();
 });
-// Criação do modelo de usuário
+
+// Criação do modelo de serviço
 const Service = mongoose.model('Service', serviceSchema);
 module.exports = Service;
-module.exports = mongoose.model('Service', serviceSchema);

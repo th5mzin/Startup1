@@ -61,23 +61,23 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
           password: formData.password,
         });
 
-        if (loginResponse.data.accessToken) {
-          localStorage.setItem('token', loginResponse.data.accessToken);
+        if (loginResponse.data.token) { // Verifique se o token está presente
+          localStorage.setItem('token', loginResponse.data.token);
           setIsLoggedIn(true);
           onLoginSuccess();
           onClose(); // Fecha o modal
-          navigate('/');
+          navigate('/'); // Redireciona para a página inicial
         } else {
           setErrorMessage('Erro ao registrar o usuário.');
         }
       } else {
         // Se for login
-        if (response.data.accessToken) {
-          localStorage.setItem('token', response.data.accessToken);
+        if (response.data.token) { // Verifique se o token está presente
+          localStorage.setItem('token', response.data.token);
           setIsLoggedIn(true);
           onLoginSuccess();
           onClose(); // Fecha o modal
-          navigate('/');
+          navigate('/'); // Redireciona para a página inicial
         } else {
           setErrorMessage('Erro ao fazer login.');
         }
@@ -127,14 +127,14 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
         <form onSubmit={handleSubmit}>
           {!isLogin && (
             <>
-             <input
+              <input
                 type="text"
                 name="firstName"
                 placeholder="Nome"
                 value={formData.firstName}
                 onChange={handleChange}
                 required
-                />
+              />
               <input
                 type="text"
                 name="lastName"
