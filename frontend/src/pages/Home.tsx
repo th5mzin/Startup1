@@ -1,61 +1,135 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; 
+import LoginModal from './LoginModal';
+import Modal from "./Modal";
+import "../styles/styles.css"
 import {
   FaHome,
-  FaSearch,
   FaTools,
+  FaBox,
   FaPaintBrush,
-  FaUtensils,
-  FaMapMarkerAlt,
-  FaStar,
-  FaFacebook,
-  FaTwitter,
-  FaInstagram,
+  FaMedkit,
+  FaCar,
+  FaShieldAlt,
+  FaUserAlt,
+  FaClipboardList,
   FaCrown,
-  FaArrowLeft,
-  FaArrowRight,
+  FaSignOutAlt,
+  FaMapMarkerAlt,
+  FaWrench,
+  FaSearch,
+  FaStar,
+  FaAngleUp,
+  FaAngleDown
 } from "react-icons/fa";
+
+interface Service {
+  title: string;
+  price: string;
+  provider: string;
+  location: string;
+  description: string;
+  rating: number;
+  reviewsCount: number;
+  isPromoted: boolean;
+  images: string[];
+  category: string;
+}
 
 const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState("home");
-  const [locationDropdownOpen, setLocationDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [filters, setFilters] = useState({
+    priceRange: "",
+    rating: "",
+    date: "",
+  });
   const [locationQuery, setLocationQuery] = useState({
     country: "Brazil",
     state: "",
     city: "",
   });
-  const [headerLocation, setHeaderLocation] = useState("BR");
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [filters, setFilters] = useState({
-    price: "",
-    rating: "",
-    date: "",
-  });
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [availableStates, setAvailableStates] = useState<string[]>([]);
+  const [availableCities, setAvailableCities] = useState<string[]>([]);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const [isFiltersVisible, setIsFiltersVisible] = useState(true); // Estado para visibilidade dos filtros
+  const [searchExpanded, setSearchExpanded] = useState(false); // Estado para expansão da barra de pesquisa
 
-  const toggleLocationDropdown = () =>
-    setLocationDropdownOpen(!locationDropdownOpen);
+  const handleOpenModal = () => {
+    setIsOpen(true);
+  };
 
-  const handleSearch = () => console.log("Search for:", searchQuery);
+  const handleCloseModal = () => {
+    setIsOpen(false);
+  };
 
-  const handleSaveLocation = () => {
-    const { country, state, city } = locationQuery;
-    if (state && city) {
-      const location = `${city}, ${state.toUpperCase()}, ${country}`;
-      setHeaderLocation(location.length > 20 ? `${city}, ${state.toUpperCase()}` : location);
-      setLocationDropdownOpen(false);
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+    handleCloseModal();
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
+
+  const handleSearch = () => {
+    if (searchQuery.trim() === "") {
+      return;
+    }
+    console.log("Search for:", searchQuery);
+  };
+
+  const openModal = (service: Service) => {
+    setSelectedService(service);
+    setTotalPrice(parseFloat(service.price.replace("$", "").replace("/hour", "")));
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  const handleCountryChange = (country: string) => {
+    setLocationQuery({ ...locationQuery, country, state: "", city: "" });
+
+    if (country === "Brazil") {
+      setAvailableStates(["SP", "RJ", "MG"]);
+      setAvailableCities(["São Paulo", "Rio de Janeiro", "Belo Horizonte"]);
+    } else if (country === "USA") {
+      setAvailableStates(["CA", "NY", "TX"]);
+      setAvailableCities(["Los Angeles", "New York", "Austin"]);
+    } else if (country === "Canada") {
+      setAvailableStates(["ON", "QC", "BC"]);
+      setAvailableCities(["Toronto", "Montreal", "Vancouver"]);
+    } else {
+      setAvailableStates([]);
+      setAvailableCities([]);
     }
   };
 
-  const handleImageChange = (direction: string) => {
-    if (direction === "next") {
-      setCurrentImageIndex((prevIndex) =>
-        prevIndex === 2 ? 0 : prevIndex + 1
-      );
+  const handleScroll = () => {
+    if (window.scrollY > 300) {
+      setShowBackToTop(true);
     } else {
-      setCurrentImageIndex((prevIndex) =>
-        prevIndex === 0 ? 2 : prevIndex - 1
-      );
+      setShowBackToTop(false);
     }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const services = Array(12).fill({
@@ -72,224 +146,248 @@ const Home = () => {
 
   const categories = [
     { name: "Home Services", icon: <FaHome /> },
+    { name: "Mechanic", icon: <FaWrench /> },
+    { name: "Beauty & Health", icon: <FaMedkit /> },
     { name: "Painting", icon: <FaPaintBrush /> },
-    { name: "Repairs", icon: <FaTools /> },
-    { name: "Cooking", icon: <FaUtensils /> },
+    { name: "Private Security", icon: <FaShieldAlt /> },
+    { name: "Private Driver", icon: <FaCar /> },
+    { name: "Electrician", icon: <FaTools /> },
+    { name: "Handyman", icon: <FaClipboardList /> },
+    { name: "Other", icon: <FaUserAlt /> },
   ];
 
   return (
     <div className="container">
-      {/* Header */}
       <header className="header">
         <div className="logo">
           <img src="/logo.svg" alt="Logo" />
         </div>
+        {showBackToTop && (
+          <button
+            className="back-to-top-btn"
+            onClick={scrollToTop}
+            aria-label="Back to top"
+          >
+            <FaAngleUp />
+          </button>
+        )}
+        {/* Barra de Pesquisa */} 
         <div className="search-bar-header">
-          <div className="search-bar">
+          <div className="search-bar" onClick={() => setSearchExpanded(!searchExpanded)}>
             <input
               type="text"
               placeholder="Search for a service..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="search-input"
+              aria-label="Search for a service"
             />
-            <button onClick={handleSearch} className="search-btn">
+            <button onClick={handleSearch} className="search-btn" aria-label="Search">
               <FaSearch />
             </button>
           </div>
-          <div className="location-selector">
-            <button className="location-btn" onClick={toggleLocationDropdown}>
-              <FaMapMarkerAlt /> {headerLocation}
-            </button>
-            {locationDropdownOpen && (
-              <div className="location-dropdown">
-                <select
-                  value={locationQuery.country}
-                  onChange={(e) =>
-                    setLocationQuery((prev) => ({
-                      ...prev,
-                      country: e.target.value,
-                    }))
-                  }
-                  className="location-select"
-                >
-                  <option value="Brazil">Brazil</option>
-                  <option value="USA">USA</option>
-                  <option value="Canada">Canada</option>
-                </select>
-                <input
-                  type="text"
-                  placeholder={`State (e.g., ${locationQuery.country === 'Brazil' ? 'SP' : 'CA'})`}
-                  value={locationQuery.state}
-                  onChange={(e) =>
-                    setLocationQuery((prev) => ({
-                      ...prev,
-                      state: e.target.value,
-                    }))
-                  }
-                  className="location-input"
-                />
-                <input
-                  type="text"
-                  placeholder={`City (e.g., ${locationQuery.country === 'Brazil' ? 'São Paulo' : 'New York'})`}
-                  value={locationQuery.city}
-                  onChange={(e) =>
-                    setLocationQuery((prev) => ({
-                      ...prev,
-                      city: e.target.value,
-                    }))
-                  }
-                  className="location-input"
-                />
-                <button onClick={handleSaveLocation} className="location-save-btn">
-                  Save
-                </button>
-              </div>
-            )}
-          </div>
         </div>
-        <div className="header-actions">
-          <button className="cta-btn">Sign Up</button>
+
+        {/* Navbar (Menu) */}
+        <div className="navbar">
+          <ul className="nav-links">
+            {!isLoggedIn ? (
+              <li>
+                <button className="cta-btn" onClick={handleOpenModal}>Sign Up</button>
+              </li>
+            ) : (
+              <>
+                <li><button className="cta-btn" onClick={() => navigate("/profile")}><FaUserAlt /> Profile</button></li>
+                <li><a href="#services"><FaBox /> Services</a></li>
+                <li><a onClick={handleLogout}><FaSignOutAlt /> Logout</a></li>
+              </>
+            )}
+          </ul>
         </div>
       </header>
 
-      {/* Categories */}
-      <nav className="categories-nav">
-        <div className="categories-scroll">
-          {categories.map((category, index) => (
-            <button
-              key={index}
-              className={`category-btn ${selectedCategory === category.name.toLowerCase() ? "selected" : ""}`}
-              onClick={() => setSelectedCategory(category.name.toLowerCase())}
-            >
-              {category.icon} {category.name}
-            </button>
-          ))}
-        </div>
-      </nav>
+      {/* Modal de Login/Registro */}
+      <LoginModal 
+        isOpen={isOpen} 
+        onClose={handleCloseModal} 
+        onLoginSuccess={handleLoginSuccess} 
+         // Passando se é login ou registro
+        setIsLoggedIn={setIsLoggedIn} // Passando a função para atualizar o estado de login
+      />
+      
+      {/* Navbar (Menu de Categorias) */}
+      <div className="categories-navbar">
+        <nav className="categories-nav">
+          <div className="categories-scroll">
+            {categories.map((category, index) => (
+              <button
+                key={index}
+                className={`category-btn ${selectedCategory === category.name.toLowerCase() ? 'selected' : ''}`}
+                onClick={() => setSelectedCategory(category.name.toLowerCase())}
+              >
+                {category.icon} {category.name}
+              </button>
+            ))}
+          </div>
+        </nav>
+      </div>
 
-      {/* Banner with Image Slides */}
-      <section className="banner">
-        <div className="banner-slider">
-          <FaArrowLeft
-            className="slider-arrow left"
-            onClick={() => handleImageChange("prev")}
-          />
-          <img
-            src={`/images/slider${currentImageIndex + 1}.jpg`}
-            alt="Banner"
-            className="banner-image"
-          />
-          <FaArrowRight
-            className="slider-arrow right"
-            onClick={() => handleImageChange("next")}
-          />
-        </div>
-        <h2>Discover Top Services</h2>
-        <p>Find the best professionals for your needs</p>
+      {/* Modal */}
+      {showModal && selectedService && (
+        <Modal
+          isOpen={showModal}
+          onClose={closeModal}
+          onConfirm={() => {
+            console.log("Service confirmed:", selectedService);
+            closeModal();
+          }}
+          selectedService={selectedService}
+          totalPrice={totalPrice}
+        />
+      )}
+
+      {/* Filters and Location Section */}
+      <section className="filters-location-section">
+        <button
+          className="toggle-filters-btn"
+          onClick={() => setIsFiltersVisible(!isFiltersVisible)}
+          aria-label="Toggle Filters"
+        >
+          {isFiltersVisible ? <FaAngleUp /> : <FaAngleDown />} Filters
+        </button>
+
+        {isFiltersVisible && (
+          <div className="filters-container">
+            {/* Price Range Filter */}
+            <div className="filter">
+              <label>Price Range</label>
+              <div className="price-slider">
+                <input
+                  type="range"
+                  min="0"
+                  max="500"
+                  value={filters.priceRange || 100}
+                  onChange={(e) => setFilters({ ...filters, priceRange: e.target.value })}
+                  className="slider"
+                />
+                <div className="price-labels">
+                  <span>$0</span>
+                  <span>${filters.priceRange || 100}</span>
+                  <span>$500</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Rating Filter */}
+            <div className="filter">
+              <label>Rating</label>
+              <div className="rating-buttons">
+                {[...Array(5)].map((_, index) => (
+                  <button
+                    key={index}
+                    className={`rating-btn ${filters.rating === (index + 1).toString() ? 'active' : ''}`}
+                    onClick={() => setFilters({ ...filters, rating: (index + 1).toString() })}
+                  >
+                    <FaStar color={filters.rating && parseFloat(filters.rating) >= (index + 1) ? '#FFD700' : '#ddd'} />
+                  </button> 
+                ))}
+              </div>
+            </div>
+
+            {/* Location Selector */}
+            <div className="location-selector">
+              <label>Country</label>
+              <select
+                value={locationQuery.country}
+                onChange={(e) => handleCountryChange(e.target.value)}
+                className="custom-select"
+              >
+                <option value="Brazil">Brazil</option>
+                <option value="USA">USA</option>
+                <option value="Canada">Canada</option>
+              </select>
+
+              <label>State</label>
+              <select
+                value={locationQuery.state}
+                onChange={(e) => setLocationQuery({ ...locationQuery, state: e.target.value })}
+                className="custom-select"
+              >
+                <option value="">Select State</option>
+                {availableStates.map((state, index) => (
+                  <option key={index} value={state}>{state}</option>
+                ))}
+              </select>
+
+              <label>City</label>
+              <select
+                value={locationQuery.city}
+                onChange={(e) => setLocationQuery({ ...locationQuery, city: e.target.value })}
+                className="custom-select"
+              >
+                <option value="">Select City</option>
+                {availableCities.map((city, index) => (
+                  <option key={index} value={city}>{city}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* Services Section */}
       <section id="services" className="services-section">
-        <div className="filters-container">
-          {/* Filtros dentro da seção de serviços */}
-          <div className="filter-item">
-            <label>Price</label>
-            <input
-              type="number"
-              placeholder="Min Price"
-              value={filters.price}
-              onChange={(e) =>
-                setFilters((prev) => ({ ...prev, price: e.target.value }))
-              }
-            />
-            <input
-              type="number"
-              placeholder="Max Price"
-              value={filters.price}
-              onChange={(e) =>
-                setFilters((prev) => ({ ...prev, price: e.target.value }))
-              }
-            />
-          </div>
-          <div className="filter-item">
-            <label>Rating</label>
-            <select
-              value={filters.rating}
-              onChange={(e) =>
-                setFilters((prev) => ({ ...prev, rating: e.target.value }))
-              }
-            >
-              <option value="">Any</option>
-              <option value="4">4 stars</option>
-              <option value="5">5 stars</option>
-            </select>
-          </div>
-          <div className="filter-item">
-            <label>Date</label>
-            <input
-              type="date"
-              value={filters.date}
-              onChange={(e) =>
-                setFilters((prev) => ({ ...prev, date: e.target.value }))
-              }
-            />
-          </div>
-        </div>
-
-        {/* Lista de Serviços */}
         <div className="services-grid">
-          {services.map((service, index) => (
-            <div className="service-card" key={index}>
-              {service.isPromoted && (
-                <div className="badge">
-                  <FaCrown style={{ color: "#FFD700", fontSize: "1.5rem" }} />
-                </div>
-              )}
-              <div className="service-image-gallery">
-                <img
-                  src={service.images[0]}
-                  alt="Service"
-                  className="service-image"
-                />
-              </div>
-              <div className="service-info">
-                <h3>{service.title}</h3>
-                <p className="service-price">{service.price}</p>
-                <p className="service-location">{service.location}</p>
-                <p className="service-description">{service.description}</p>
-                <p className="service-name">{service.provider}</p>
+          {services
+            .filter((service) => {
+              // Filtro de Preço (convertendo para número)
+              const servicePrice = parseFloat(service.price.replace("$", "").split("/")[0]);
+              if (filters.priceRange === "low" && servicePrice > 100) return false;
+              if (filters.priceRange === "high" && servicePrice <= 100) return false;
 
-                {/* Ratings and Review Count */}
-                <div className="stars">
-                  {[...Array(5)].map((_, idx) => (
-                    <FaStar
-                      key={idx}
-                      className={`star ${idx < Math.floor(service.rating) ? "filled" : ""}`}
-                    />
-                  ))}
-                </div>
-                <div className="review-count">
-                  <span>{service.reviewsCount} reviews</span>
-                </div>
+              // Filtro de Avaliação (comparando como número)
+              if (filters.rating && service.rating < parseFloat(filters.rating)) return false;
 
-                {/* "Hire Now" button */}
-                <button className="hire-now-btn">Hire Now</button>
+              return true;
+            })
+            .map((service, index) => (
+              <div className="service-card" key={index}>
+                {service.isPromoted && (
+                  <div className="badge">
+                    <FaCrown style={{ color: "#FFD700", fontSize: "1.5rem" }} />
+                  </div>
+                )}
+                <div className="service-image-gallery">
+                  <img src={service.images[0]} alt="Service" className="service-image" />
+                </div>
+                <div className="service-info">
+                  <h3>{service.title}</h3>
+                  <p className="service-price">{service.price}</p>
+                  <p className="service-description">{service.description}</p>
+                  <p className="service-provider">
+                    <strong style={{ color: "blue" }}>{service.provider}</strong>
+                  </p>
+                  <div className="service-details">
+                    <div className="service-rating">
+                      {[...Array(5)].map((_, index) => (
+                        <FaStar key={index} color={service.rating > index ? "#FFD700" : "#ddd"} />
+                      ))}
+                      <span>({service.reviewsCount})</span>
+                    </div>
+                    <div className="service-location">
+                      <FaMapMarkerAlt /> {service.location}
+                    </div>
+                  </div>
+
+                  {/* Container para o botão de Request Service centralizado */}
+                  <div className="request-service-btn-container">
+                  <button className="service-btn" onClick={() => openModal(service)}>Request Service</button>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="footer">
-        <div className="social-icons">
-          <FaFacebook />
-          <FaTwitter />
-          <FaInstagram />
-        </div>
-        <p>© 2024 Your Company. All rights reserved.</p>
-      </footer>
     </div>
   );
 };

@@ -1,5 +1,17 @@
 {
-  "files": [],
+  "compilerOptions": {
+    "composite": true,
+    "noEmit": false,
+    "module": "esnext",
+    "target": "es5",
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "src/**/*"
+  ],
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }

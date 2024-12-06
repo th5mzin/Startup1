@@ -1,0 +1,456 @@
+/* Estilos gerais do modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* Fundo ofuscado mais escuro */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    animation: fadeIn 0.3s forwards; /* Animação de fade-in */
+}
+
+/* Transição para o conteúdo do modal */
+.modal-content {
+    background: white;
+    padding: 15px; /* Reduzir o padding */
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    width: 90%; /* Ajustar para uma largura menor */
+    max-width: 500px; /* Diminuir a largura máxima do modal */
+    transition: all 0.3s ease;
+    animation: slideUp 0.3s forwards; /* Animação para o conteúdo */
+}
+
+/* Estilos gerais para a lista de datas */
+.selected-dates {
+    display: flex;
+    flex-wrap: wrap; /* Permite que o conteúdo se ajuste em várias linhas se necessário */
+    justify-content: space-between; /* Distribui o espaço entre os itens */
+    margin-top: 10px; /* Espaçamento acima */
+}
+
+.selected-dates-text {
+    flex: 1; /* Faz com que o texto ocupe o espaço disponível */
+    margin-right: 10px; /* Espaçamento à direita */
+}
+
+.no-dates-selected {
+    color: red; /* Cor para indicar que nenhuma data foi selecionada */
+}
+
+.selected-date button {
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 2px 6px;
+    font-size: 12px;
+}
+
+.selected-date button:hover {
+    background-color: darkred;
+}
+
+/* Exibição de texto do intervalo de datas */
+.selected-dates-text {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333;
+    font-weight: 600;
+}
+
+.datepicker-popup {
+    position: absolute; /* Para posicionar em relação ao contêiner pai */
+    bottom: 100%; /* Para que apareça acima do botão */
+    left: 0;
+    z-index: 1000; /* Para garantir que fique acima de outros elementos */
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.no-dates-selected {
+    font-size: 14px;
+    color: #999;
+}
+
+.confirm-dates-btn {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.confirm-dates-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Estilo do contêiner DatePicker */
+.datepicker-container {
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.datepicker-container .react-datepicker__input-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes slideUp {
+    0% { transform: translateY(50px); }
+    100% { transform: translateY(0); }
+}
+
+/* Cabeçalho do modal */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 22px;
+    color: #333;
+    font-weight: 600;
+}
+
+.modal-close {
+    font-size: 22px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+    color: #dc3545; /* Cor de alerta ao passar o mouse */
+}
+
+/* Imagem do serviço */
+.service-image img {
+    width: 100%;
+    max-width: 230px;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.no-image {
+    width: 100%;
+    height: 180px;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #888;
+    font-size: 14px;
+    border-radius: 8px;
+}
+
+/* Atualização no container de detalhes do serviço */
+.service-details-container {
+    background-color: #fafafa;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.service-details h3 {
+    margin-top: 0;
+    font-size: 18px;
+    color: #333;
+    font-weight: 500;
+}
+
+.service-details p {
+    font-size: 15px;
+    color: #666;
+    line-height: 1.6;
+}
+
+.price-summary {
+    font-size: 20px;
+    font-weight: bold;
+    color: #28a745; /* Cor verde para destacar o preço */
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #f3f9f3; /* Fundo suave para destacar o preço */
+    text-align: center; /* Centraliza o preço */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+.price-summary span {
+    font-size: 24px; /* Aumenta o tamanho do preço */
+}
+
+/* Botões */
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    border: none;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.modal-footer {
+    display: flex; /* Ativa o Flexbox */
+    justify-content: center; /* Centraliza o conteúdo horizontalmente */
+    align-items: center; /* Centraliza o conteúdo verticalmente, se necessário */
+    margin-top: 20px; /* Espaçamento acima do footer */
+    padding: 10px 0; /* Espaçamento interno do footer */
+}
+
+.confirm-btn {
+    margin-right: 10px;
+    padding: 10px 20px; /* Espaçamento interno do botão */
+    background-color: #28a745; /* Cor do botão */
+    color: white; /* Cor do texto */
+    border: none;
+    border-radius: 4px; /* Bordas arredondadas */
+    cursor: pointer;
+    font-size: 16px; /* Tamanho da fonte */
+    transition: background-color 0.3s; /* Transição suave para a cor de fundo */
+}
+
+.confirm-btn:hover {
+    background-color: #0056b3; /* Cor ao passar o mouse */
+}
+
+.cancel-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.cancel-btn:hover {
+    background-color: #c82333;
+    transform: translateY(-2px); /* Suaviza a interação com o botão */
+}
+
+/* Adicionando espaçamento nos campos de input */
+input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+input[type="number"]:focus {
+    border-color: #28a745;
+    outline: none;
+}
+
+/* Modal de pagamento e tipo de pagamento */
+.payment-type-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.payment-type-btn.selected {
+    background-color: #28a745;
+    color: white;
+    font-weight: bold;
+}
+
+.payment-type-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.select-dates-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.select-dates-btn:hover {
+    background-color: #0056b3;
+}
+
+.price-summary {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+.price-summary p {
+    color: #333;
+}
+
+.hour-container {
+    margin: 20px 0; /* Adiciona margem ao contêiner */
+    display: flex; /* Usar flexbox para alinhar o título e o seletor */
+    flex-direction: column; /* Alinha os itens verticalmente */
+}
+
+.hour-title {
+    font-size: 18px; /* Tamanho da fonte do título */
+    margin-bottom: 10px; /* Espaço abaixo do título */
+    color: #495057; /* Cor do título */
+}
+
+.hour-selection {
+    display: inline-block; /* Para que o select se comporte como um bloco */
+    width: 100px; /* Largura do select */
+    padding: 10px; /* Espaçamento interno */
+    font-size: 16px; /* Tamanho da fonte */
+    color: #495057; /* Cor do texto */
+    background-color: #ffffff; /* Cor de fundo */
+    border: 1px solid #ced4da; /* Borda padrão */
+    border-radius: 4px; /* Bordas arredondadas */
+    appearance: none; /* Remove a seta padrão do select */
+    background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"%3E%3Cpath fill="none" stroke="%23495057" stroke-width="2" d="M1 4l7 7 7-7" /%3E%3C/svg%3E'); /* Seta personalizada */
+    background-repeat: no-repeat; /* Não repetir a imagem de fundo */
+    background-position: right 10px center; /* Posição da seta personalizada */
+    background-size: 12px; /* Tamanho da seta personalizada */
+    cursor: pointer; /* Cursor de ponteiro ao passar o mouse */
+    transition: border-color 0.3s ease; /* Transição suave para a cor da borda */
+}
+
+.hour-selection:focus {
+    outline: none; /* Remove o contorno padrão do foco */
+    border-color: #80bdff; /* Cor da borda quando em foco */
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Sombra ao redor do select quando em foco */
+}
+
+.hour-selection:disabled {
+    background-color: #e9ecef; /* Cor de fundo para select desativado */
+    color: #6c757d; /* Cor do texto para select desativado */
+}
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.3); /* Fundo claro com opacidade */
+    backdrop-filter: blur(5px); /* Efeito de desfoque */
+    z-index: 1999; /* Deve ser menor que o z-index do PaymentForm */
+}
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%; /* Largura do modal em dispositivos móveis */
+        padding: 10px; /* Reduzir ainda mais o padding em dispositivos móveis */
+    }
+
+    .confirm-btn {
+        font-size: 14px; /* Tamanho da fonte do botão em dispositivos móveis */
+    }
+}
+/* Estilos gerais do modal de criação de serviço */
+.create-service-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    animation: fadeIn 0.3s forwards; /* Animação de fade-in */
+}
+
+/* Transição para o conteúdo do modal de criação de serviço */
+.create-service-modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    width: 80%; /* Ajustar conforme necessário */
+    max-width: 600px; /* Largura máxima do modal */
+    transition: all 0.3s ease;
+}
+
+/* Estilos para o formulário */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+/* Botões no modal */
+.create-service-modal .cta-btn {
+    padding: 10px 15px;
+    background-color: #28a745; /* Cor do botão de criar serviço */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.create-service-modal .cta-btn:hover {
+    background-color: #218838; /* Cor ao passar o mouse */
+}
+
+.create-service-modal .cancel-btn {
+    background-color: #dc3545; /* Cor do botão de cancelar */
+}
+
+.create-service-modal .cancel-btn:hover {
+    background-color: #c82333; /* Cor ao passar o mouse */
+}

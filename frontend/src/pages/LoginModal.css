@@ -1,0 +1,106 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7); /* Escurece o fundo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Certifique-se de que o modal esteja acima de outros elementos */
+  }
+  
+  .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 400px; /* Largura do modal */
+    text-align: center; /* Centraliza o texto */
+  }
+  
+  .modal-content h2 {
+    margin-bottom: 20px;
+  }
+  
+  .modal-content input,
+  .modal-content select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* Inclui padding e border no cálculo da largura */
+  }
+  
+  .submit-button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff; /* Cor do botão */
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .submit-button:disabled {
+    background-color: #ccc; /* Cor do botão desabilitado */
+  }
+  
+  .submit-button:hover:not(:disabled) {
+    background-color: #0056b3; /* Cor do botão ao passar o mouse */
+  }
+  
+  .toggle-button {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    text-align: left;
+    margin: 10px 0;
+  }
+  
+  .close-button {
+    background: none;
+    border: none;
+    color: red;
+    cursor: pointer;
+    text-align: right;
+    margin-top: 10px;
+  }
+  
+  .terms-container {
+    margin: 20px 0; /* Espaçamento em cima e embaixo do texto dos termos */
+  }
+  
+  .terms-container p {
+    font-size: 14px; /* Tamanho da fonte do texto dos termos */
+  }
+  .terms-container p {
+    font-size: 14px; /* Tamanho da fonte do texto dos termos */
+    line-height: 1.5; /* Espaçamento entre linhas */
+  }
+  
+  .terms-container a {
+    color: #007bff; /* Cor dos links */
+    text-decoration: none; /* Remove o sublinhado */
+  }
+  
+  .terms-container a:hover {
+    text-decoration: underline; /* Adiciona sublinhado ao passar o mouse */
+  }
+  
+  /* Estilo para os botões de fechar e alternar */
+  .toggle-button,
+  .close-button {
+    font-size: 14px; /* Tamanho da fonte dos botões */
+    cursor: pointer; /* Muda o cursor para indicar que é clicável */
+  }
+  
+  .toggle-button:hover,
+  .close-button:hover {
+    text-decoration: underline; /* Adiciona sublinhado ao passar o mouse */
+  }
