@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; 
 import LoginModal from './LoginModal';
 import Modal from "./Modal";
-import "../styles/styles.css"
+import "../styles/styles.css";
 import {
   FaHome,
   FaTools,
@@ -58,8 +58,8 @@ const Home = () => {
   const [availableStates, setAvailableStates] = useState<string[]>([]);
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [showBackToTop, setShowBackToTop] = useState(false);
-  const [isFiltersVisible, setIsFiltersVisible] = useState(true); // Estado para visibilidade dos filtros
-  const [searchExpanded, setSearchExpanded] = useState(false); // Estado para expansão da barra de pesquisa
+  const [isFiltersVisible, setIsFiltersVisible] = useState(true);
+  const [searchExpanded, setSearchExpanded] = useState(false);
 
   const handleOpenModal = () => {
     setIsOpen(true);
@@ -75,6 +75,7 @@ const Home = () => {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('token'); // Remove o token do localStorage
     setIsLoggedIn(false);
   };
 
@@ -171,7 +172,7 @@ const Home = () => {
             <FaAngleUp />
           </button>
         )}
-        {/* Barra de Pesquisa */} 
+        {/* Barra de Pesquisa */}
         <div className="search-bar-header">
           <div className="search-bar" onClick={() => setSearchExpanded(!searchExpanded)}>
             <input
@@ -211,8 +212,7 @@ const Home = () => {
         isOpen={isOpen} 
         onClose={handleCloseModal} 
         onLoginSuccess={handleLoginSuccess} 
-         // Passando se é login ou registro
-        setIsLoggedIn={setIsLoggedIn} // Passando a função para atualizar o estado de login
+        setIsLoggedIn={setIsLoggedIn} 
       />
       
       {/* Navbar (Menu de Categorias) */}
@@ -248,7 +248,7 @@ const Home = () => {
 
       {/* Filters and Location Section */}
       <section className="filters-location-section">
-        <button
+      <button
           className="toggle-filters-btn"
           onClick={() => setIsFiltersVisible(!isFiltersVisible)}
           aria-label="Toggle Filters"
@@ -381,7 +381,7 @@ const Home = () => {
 
                   {/* Container para o botão de Request Service centralizado */}
                   <div className="request-service-btn-container">
-                  <button className="service-btn" onClick={() => openModal(service)}>Request Service</button>
+                    <button className="service-btn" onClick={() => openModal(service)}>Request Service</button>
                   </div>
                 </div>
               </div>

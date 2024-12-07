@@ -1,38 +1,39 @@
 const mongoose = require('mongoose');
 
+// Definindo o esquema do serviço (o mesmo que você forneceu)
 const serviceSchema = new mongoose.Schema({
-  provider: { type: mongoose.Schema.Types.ObjectId, ref: 'User ', required: true },  // Referência ao provedor do serviço
-  pricePerHour: { type: Number, required: true },  // Preço por hora
-  images: [{ type: String }],  // Imagens (até 5 imagens)
-  category: { type: String, required: true },  // Categoria predefinida do serviço
+  provider: { type: mongoose.Schema.Types.ObjectId, ref: 'User ', required: true },
+  pricePerHour: { type: Number, required: true },
+  images: [{ type: String }],
+  category: { type: String, required: true },
   location: {
-    country: { type: String, required: true },  // País
-    state: { type: String, required: true },    // Estado
-    city: { type: String, required: true },     // Cidade
+    country: { type: String, required: true },
+    state: { type: String, required: true },
+    city: { type: String, required: true },
   },
-  serviceDuration: { type: Number, required: true },  // Duração total do serviço (em horas)
-  maxDuration: { type: Number, default: 240 }, // Limite máximo de horas (30 dias x 8h)
-  startDate: { type: Date, required: true }, // Data de início do serviço
-  endDate: { type: Date, required: true },   // Data de término (calculado com base na duração)
+  serviceDuration: { type: Number, required: true },
+  maxDuration: { type: Number, default: 240 },
+  startDate: { type: Date, required: true },
+  endDate: { type: Date, required: true },
   status: {
     type: String,
-    enum: ['paid', 'in progress', 'completed', 'pending', 'cancelled'],  // Status do serviço
+    enum: ['paid', 'in progress', 'completed', 'pending', 'cancelled'],
     default: 'paid',
   },
   ratings: [{
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User ', required: true },  // Usuário que fez a avaliação
-    rating: { type: Number, required: true, min: 1, max: 5 },  // Avaliação de 1 a 5
-    comment: { type: String, required: false },  // Comentário da avaliação
-    createdAt: { type: Date, default: Date.now }  // Data da avaliação
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User ', required: true },
+    rating: { type: Number, required: true, min: 1, max: 5 },
+    comment: { type: String, required: false },
+    createdAt: { type: Date, default: Date.now }
   }],
-  averageRating: { type: Number, default: 0 },  // Média das avaliações
-  createdAt: { type: Date, default: Date.now },  // Data de criação
-  updatedAt: { type: Date, default: Date.now },  // Data de atualização
-  deletedAt: { type: Date, default: null },  // Para rastrear a exclusão
+  averageRating: { type: Number, default: 0 },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+  deletedAt: { type: Date, default: null },
 });
 
 // Índice para expiração de documentos
-serviceSchema.index({ deletedAt: 1 }, { expireAfterSeconds: 1296000 });  // Expira após 15 dias
+serviceSchema.index({ deletedAt: 1 }, { expireAfterSeconds: 1296000 });
 
 // Método para calcular a média das avaliações
 serviceSchema.methods.calculateAverageRating = function () {
@@ -48,7 +49,7 @@ serviceSchema.methods.calculateAverageRating = function () {
 // Middleware para atualizar a média das avaliações e a data de atualização antes de salvar
 serviceSchema.pre('save', function (next) {
   this.averageRating = this.calculateAverageRating();
-  this.updatedAt = Date.now(); // Atualiza a data de atualização
+  this.updatedAt = Date.now();
   next();
 });
 

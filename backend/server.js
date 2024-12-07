@@ -4,6 +4,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
+const serviceRoutes = require('./routes/serviceRoutes');
 const userRoutes = require('./routes/userRoutes'); // Se necessário
 
 dotenv.config();
@@ -22,6 +23,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 });
 
 // Usar as rotas
+app.use('/api/services', serviceRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes); // Se necessário
 
