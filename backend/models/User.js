@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const argon2 = require('argon2'); // Importando o argon2
 const jwt = require('jsonwebtoken');
 
 // Definindo o esquema do usuário
@@ -21,60 +21,40 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true }, // Senha do usuário (será criptografada)
     role: {
       type: String,
-      enum: ['user', 'service-provider', 'admin'], // Adicionando 'admin' como um papel
-      required: true,
-      default: 'user', // Define 'user' como padrão
+      enum: ['user', 'service-provider'], // Removendo o 'admin' do modelo de registro
+      default: 'user', // O papel padrão será 'user'
     },
-    avatar: { type: String, default: '/images/default-avatar.jpg' }, // Avatar do usuário
-    country: { type: String, required: true }, // País do usuário
-    city: { type: String, required: true }, // Cidade do usuário
-    state: { type: String, required: true }, // Estado do usuário
-    cpf: {
-      type: String,
-      required: true,
-      unique: true,
-      validate: {
-        validator: function (v) {
-          return /^\d{11}$/.test(v); // CPF com 11 dígitos
-        },
-        message: (props) => `${props.value} não é um CPF válido!`,
-      },
-    },
+    avatar: { type: String, default: '/images/default-avatar.jpg' },
+    country: { type: String, required: false },
+    city: { type: String, required: false },
+    state: { type: String, required: false },
+    cpf: { type: String }, // CPF é opcional
     isActive: { type: Boolean, default: true },
     isVerified: { type: Boolean, default: false },
-  },
-  { timestamps: true }
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
+  }
 );
 
-// Método para comparar a senha com a criptografada
-userSchema.methods.comparePassword = async function (password) {
-  return bcrypt.compare(password, this.password);
-};
-
-// Método para atualizar a senha
-userSchema.methods.updatePassword = async function (currentPassword, newPassword) {
-  const isMatch = await this.comparePassword(currentPassword);
-  if (!isMatch) throw new Error('Senha atual incorreta');
-
-  // Criptografar a nova senha
-  this.password = await bcrypt.hash(newPassword, 10);
-  await this.save();
-};
-
-// Middleware para criptografar a senha antes de salvar no banco
+// Função para hash da senha antes de salvar o usuário
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
-  console.log('Hashing senha para o usuário:', this.email); // Log para depuração
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
+  if (this.isModified('password')) {
+    try {
+      const hashedPassword = await argon2.hash(this.password);
+      this.password = hashedPassword; // Substituindo a senha pelo hash
+      next();
+    } catch (err) {
+      next(err);
+    }
+  } else {
+    next();
+  }
 });
 
-// Método para gerar um token de verificação de email
-userSchema.methods.generateVerificationToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+// Método para comparar a senha fornecida com o hash no banco
+userSchema.methods.isPasswordValid = async function (password) {
+  return await argon2.verify(this.password, password);
 };
 
-// Criação do modelo de usuário
 const User = mongoose.model('User', userSchema);
-
 module.exports = User;

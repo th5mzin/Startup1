@@ -1,11 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const authController = require('../controllers/authController'); // Verifique se o caminho está correto
+const { registerUser, loginUser, verifyToken } = require('../controllers/authController');
+const { body } = require('express-validator');
 
-// Rota de login
-router.post('/login', authController.loginUser ); // Verifique se a função foi importada corretamente
+// Middleware de validação
+const validateUser = [
+  body('email').isEmail().withMessage('Email inválido.'),
+  body('password').isLength({ min: 6 }).withMessage('A senha deve ter pelo menos 6 caracteres.'),
+];
 
-// Rota de registro com validação
-router.post('/register', authController.validateUser , authController.registerUser ); // Adicionando validação
+// Rotas de autenticação
+
+// Rota de registro de usuário
+router.post('/register', validateUser, registerUser);
+
+// Rota de login de usuário
+router.post('/login', validateUser, loginUser);
+
+// Rota para verificar token JWT
+router.get('/verify', verifyToken);
 
 module.exports = router;

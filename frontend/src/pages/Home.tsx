@@ -159,53 +159,74 @@ const Home = () => {
 
   return (
     <div className="container">
-      <header className="header">
-        <div className="logo">
-          <img src="/logo.svg" alt="Logo" />
-        </div>
-        {showBackToTop && (
-          <button
-            className="back-to-top-btn"
-            onClick={scrollToTop}
-            aria-label="Back to top"
-          >
-            <FaAngleUp />
-          </button>
-        )}
-        {/* Barra de Pesquisa */}
-        <div className="search-bar-header">
-          <div className="search-bar" onClick={() => setSearchExpanded(!searchExpanded)}>
-            <input
-              type="text"
-              placeholder="Search for a service..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
-              aria-label="Search for a service"
-            />
-            <button onClick={handleSearch} className="search-btn" aria-label="Search">
-              <FaSearch />
-            </button>
-          </div>
-        </div>
+  <div className="container">
+  <header className="header">
+    {/* Logo */}
+    <div className="logo">
+  <img src="/images/logo.svg" alt="Logo" />
+</div>
 
-        {/* Navbar (Menu) */}
-        <div className="navbar">
-          <ul className="nav-links">
-            {!isLoggedIn ? (
-              <li>
-                <button className="cta-btn" onClick={handleOpenModal}>Sign Up</button>
-              </li>
-            ) : (
-              <>
-                <li><button className="cta-btn" onClick={() => navigate("/profile")}><FaUserAlt /> Profile</button></li>
-                <li><a href="#services"><FaBox /> Services</a></li>
-                <li><a onClick={handleLogout}><FaSignOutAlt /> Logout</a></li>
-              </>
-            )}
-          </ul>
-        </div>
-      </header>
+    {showBackToTop && (
+      <button
+        className="back-to-top-btn"
+        onClick={scrollToTop}
+        aria-label="Back to top"
+      >
+        <FaAngleUp />
+      </button>
+    )}
+
+    {/* Barra de Pesquisa */}
+    <div className="search-bar-header">
+      <div className="search-bar" onClick={() => setSearchExpanded(!searchExpanded)}>
+        <input
+          type="text"
+          placeholder="Search for a service..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="search-input"
+          aria-label="Search for a service"
+        />
+        <button onClick={handleSearch} className="search-btn" aria-label="Search">
+          <FaSearch />
+        </button>
+      </div>
+    </div>
+
+    {/* Botão de Signup */}
+    {!isLoggedIn && (
+      <div className="signup-container">
+        <button className="cta-btn" onClick={handleOpenModal}>
+          Sign Up
+        </button>
+      </div>
+    )}
+
+    {/* Navbar (Menu) */}
+    {isLoggedIn && (
+      <div className="navbar">
+        <ul className="nav-links">
+          <li>
+            <button className="cta-btn" onClick={() => navigate("/profile")}>
+              <FaUserAlt /> Profile
+            </button>
+          </li>
+          <li>
+            <a href="#services">
+              <FaBox /> Services
+            </a>
+          </li>
+          <li>
+            <a onClick={handleLogout}>
+              <FaSignOutAlt /> Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    )}
+  </header>
+</div>
+
 
       {/* Modal de Login/Registro */}
       <LoginModal 
@@ -248,7 +269,7 @@ const Home = () => {
 
       {/* Filters and Location Section */}
       <section className="filters-location-section">
-      <button
+        <button
           className="toggle-filters-btn"
           onClick={() => setIsFiltersVisible(!isFiltersVisible)}
           aria-label="Toggle Filters"
@@ -265,8 +286,7 @@ const Home = () => {
                 <input
                   type="range"
                   min="0"
-                  max="500"
-                  value={filters.priceRange || 100}
+                  max="500" value={filters.priceRange || 100}
                   onChange={(e) => setFilters({ ...filters, priceRange: e.target.value })}
                   className="slider"
                 />
@@ -381,7 +401,7 @@ const Home = () => {
 
                   {/* Container para o botão de Request Service centralizado */}
                   <div className="request-service-btn-container">
-                    <button className="service-btn" onClick={() => openModal(service)}>Request Service</button>
+                    <button className="service-btn" onClick={() => openModal(service)}> Request Service</button>
                   </div>
                 </div>
               </div>

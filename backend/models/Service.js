@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
 
-// Definindo o esquema do serviço (o mesmo que você forneceu)
+// Definindo o esquema do serviço
 const serviceSchema = new mongoose.Schema({
   provider: { type: mongoose.Schema.Types.ObjectId, ref: 'User ', required: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
   pricePerHour: { type: Number, required: true },
   images: [{ type: String }],
   category: { type: String, required: true },
@@ -54,5 +56,5 @@ serviceSchema.pre('save', function (next) {
 });
 
 // Criação do modelo de serviço
-const Service = mongoose.model('Service', serviceSchema);
+const Service = mongoose.models.Service || mongoose.model('Service', serviceSchema);
 module.exports = Service;
