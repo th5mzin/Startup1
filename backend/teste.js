@@ -1,10 +1,26 @@
-const argon2 = require('argon2');
+const mongoose = require("mongoose");
+const User = require("./models/User"); // Importa o modelo
 
-async function verifyHash() {
-  const hash = '$argon2id$v=19$m=65536,t=3,p=4$R4Pz+D0uKQp7tnC22/flIw$XKn9UA9rN94IOctK8wZJVmPoWwLXorZtx5Wh9pP+MRQ';
-  const password = 'Kinger*23';
-  const isMatch = await argon2.verify(hash, password);
-  console.log('Comparação manual:', isMatch);
-}
+const updateProviders = async () => {
+  try {
+    await mongoose.connect("mongodb://localhost:27017/startup1", {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
 
-verifyHash();
+    console.log("Conectado ao MongoDB");
+
+    // Atualiza todos os providers adicionando o campo com valor padrão
+    const result = await User.updateMany(
+      { role: "service-provider" }, // Filtra apenas os providers
+      { $set: { isBalanceAvailableForWithdrawal: true } } // Adiciona o novo campo
+    );
+
+    console.log(`Atualizados ${result.modifiedCount} documentos.`);
+    mongoose.disconnect();
+  } catch (error) {
+    console.error("Erro ao atualizar documentos:", error);
+  }
+};
+
+updateProviders();

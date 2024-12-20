@@ -1,68 +1,64 @@
-import React, { useState, useEffect } from "react";
-import { FaCreditCard, FaPaypal, FaCcMastercard, FaCcVisa } from "react-icons/fa";
-import { SiMercadopago } from "react-icons/si"; // Mercado Pago
+import React, { useState } from "react";
+import { FaCreditCard } from "react-icons/fa";
 import "./Payment.css";
+import axios from "axios";
+
+interface Provider {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  category: string;
+  email: string;
+  pricePerHour: number;
+  formattedAddress: string;
+  providerId: string;
+  location: {
+    lat: number;
+    lng: number;
+  };
+  ratingStats: {
+    averageRating: number;
+    totalRatings: number;
+  };
+  servicesCompleted: number;
+  avatar: string;
+  isBusy: boolean;
+}
 
 interface PaymentFormProps {
   onClose: () => void;
-  onConfirmPayment: (paymentInfo: PaymentInfo) => void;
+  onConfirmPayment: () => Promise<void>;
   totalPrice: number;
-  selectedService: {
-    title: string;
-    price: string;
-    provider: string;
-    location: string;
-    description: string;
-  };
-  selectedDates: string[]; // Inclui selectedDates
-}
-
-interface PaymentInfo {
-  paymentMethod: string;
-  cardNumber?: string;
-  cvv?: string;
-  expiryDate?: string;
-  address: string;
-  selectedDates: string[]; // Inclui selectedDates
+  selectedProvider: Provider;
+  selectedHours: number;
+  startTime: string;
+  endTime: string;
 }
 
 const PaymentForm: React.FC<PaymentFormProps> = ({
   onClose,
   onConfirmPayment,
   totalPrice,
-  selectedService,
-  selectedDates,
+  selectedProvider,
 }) => {
   const [paymentMethod, setPaymentMethod] = useState<string>("creditCard");
   const [cardNumber, setCardNumber] = useState<string>("");
   const [cvv, setCvv] = useState<string>("");
   const [expiryDate, setExpiryDate] = useState<string>("");
-  const [address, setAddress] = useState<string>("");
-  const [cardType, setCardType] = useState<string>("");
-
-  // Detecta o tipo de cartão baseado no primeiro número
-  useEffect(() => {
-    if (cardNumber.length >= 1) {
-      const firstDigit = cardNumber[0];
-      if (firstDigit === "4") {
-        setCardType("visa");
-      } else if (firstDigit === "5") {
-        setCardType("mastercard");
-      } else {
-        setCardType("");
-      }
-    }
-  }, [cardNumber]);
+  const [pixQrCode, setPixQrCode] = useState<string>("");
+  const [pixCopyCode, setPixCopyCode] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   const handlePaymentMethodChange = (method: string) => {
     setPaymentMethod(method);
+    setError("");
   };
 
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formattedCardNumber = e.target.value
       .replace(/\D/g, "")
-      .slice(0, 16) // Limita a 16 números
-      .replace(/(\d{4})(?=\d)/g, "$1 "); // Formata com espaços
+      .slice(0, 16)
+      .replace(/(\d{4})(?=\d)/g, "$1 ");
     setCardNumber(formattedCardNumber);
   };
 
@@ -73,88 +69,127 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     setExpiryDate(formattedDate);
   };
 
-  const handlePaymentConfirm = () => {
-    const paymentInfo: PaymentInfo = {
-      paymentMethod,
-      cardNumber,
-      cvv,
-      expiryDate,
-      address,
-      selectedDates, // Envia as datas selecionadas
-    };
+  const processPixPayment = async () => {
+    try {
+      const response = await axios.post(
+        "https://api.mercadopago.com/v1/payments",
+        {
+          transaction_amount: totalPrice, // Valor total em BRL
+          description: `Pagamento via PIX para ${selectedProvider.firstName} ${selectedProvider.lastName}`,
+          payment_method_id: "pix",
+          payer: {
+            email: "cliente@example.com", // Substitua pelo e-mail do cliente
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer TEST-3881663633867242-080822-7b4c51c823075cd72844e842af1191a4-1142240884`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-    // Chama a função de confirmação de pagamento
-    onConfirmPayment(paymentInfo);
+      const data = response.data;
+      setPixQrCode(data.point_of_interaction.transaction_data.qr_code);
+      setPixCopyCode(data.point_of_interaction.transaction_data.qr_code_base64);
+    } catch  {
+      console.error("Erro ao processar pagamento PIX:");
+      setError("Erro ao gerar PIX. Verifique os dados e tente novamente.");
+    }
+  };
+  const processCardPayment = async () => {
+    try {
+      const response = await axios.post(
+        "https://api.stripe.com/v1/payment_intents",
+        {
+          amount: totalPrice * 100,
+          currency: "brl",
+          payment_method_types: ["card"],
+          payment_method_data: {
+            type: "card",
+            card: {
+              number: cardNumber.replace(/\s/g, ""),
+              exp_month: parseInt(expiryDate.split("/")[0]),
+              exp_year: 2000 + parseInt(expiryDate.split("/")[1]),
+              cvc: cvv,
+            },
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer sk_test_51QXn2eA15jxYGCvTsPtJhYgkCZSasnKPoi4UxsOUSHnX1EhO65eYWYJhayNgmCcU3YPGrABQXcgQNAt301zRCq3j00tN6tqR0X`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.data.status === "succeeded") {
+        await onConfirmPayment(); // Chama a função passada do Modal
+      } else {
+        setError("Pagamento com cartão não foi concluído.");
+      }
+    } catch {
+      setError("Erro ao processar pagamento com cartão.");
+    }
   };
 
+  const handlePaymentConfirm = () => {
+    if (paymentMethod === "creditCard") {
+      processCardPayment();
+    } else if (paymentMethod === "pix") {
+      processPixPayment();
+    }
+  };
   return (
     <div className="payment-form">
-      <h3>Payment Information</h3>
+      <h3>Informações de Pagamento</h3>
+      {error && <div className="error-message">{error}</div>}
 
-      {/* Seção de método de pagamento */}
       <div className="payment-method-selection">
         <button
           className={`payment-method-btn ${paymentMethod === "creditCard" ? "selected" : ""}`}
           onClick={() => handlePaymentMethodChange("creditCard")}
         >
           <FaCreditCard />
-          <span>Credit Card</span>
+          <span>Cartão de Crédito</span>
         </button>
         <button
-          className={`payment-method-btn ${paymentMethod === "paypal" ? "selected" : ""}`}
-          onClick={() => handlePaymentMethodChange("paypal")}
+          className={`payment-method-btn ${paymentMethod === "pix" ? "selected" : ""}`}
+          onClick={() => {
+            handlePaymentMethodChange("pix");
+            processPixPayment();
+          }}
         >
-          <FaPaypal />
-          <span>PayPal</span>
-        </button>
-        <button
-          className={`payment-method-btn ${paymentMethod === "mercadoPago" ? "selected" : ""}`}
-          onClick={() => handlePaymentMethodChange("mercadoPago")}
-        >
-          <SiMercadopago />
-          <span>Mercado Pago</span>
+          <span>PIX</span>
         </button>
       </div>
 
-      {/* Campo de número do cartão */}
       {paymentMethod === "creditCard" && (
-        <div className="input-field">
-          <label>Card Number</label>
-          <div className="card-number-container">
-            {/* Ícone do cartão */}
-            <div className="card-icon">
-              {cardType === "visa" && <FaCcVisa />}
-              {cardType === "mastercard" && <FaCcMastercard />}
-              {!cardType && <FaCreditCard />}
-            </div>
+        <>
+          <div className="input-field">
+            <label>Número do Cartão</label>
             <input
               type="text"
               value={cardNumber}
               onChange={handleCardNumberChange}
-              placeholder="Enter card number"
-              maxLength={19} // Limita a 16 números + 3 espaços
+              placeholder="Digite o número do cartão"
+              maxLength={19}
               required
             />
           </div>
-        </div>
-      )}
-
-      {/* Outros campos para cartões de crédito */}
-      {paymentMethod === "creditCard" && (
-        <>
           <div className="input-field">
             <label>CVV</label>
             <input
               type="text"
               value={cvv}
               onChange={(e) => setCvv(e.target.value)}
-              placeholder="Enter CVV"
+              placeholder="Digite o CVV"
               maxLength={4}
               required
             />
           </div>
           <div className="input-field">
-            <label>Expiry Date</label>
+            <label>Data de Validade</label>
             <input
               type="text"
               value={expiryDate}
@@ -167,38 +202,40 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         </>
       )}
 
-      {/* Campo de endereço */}
-      <div className="input-field">
-        <label>Address</label>
-        <input
-          type="text"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          placeholder="Enter your billing address"
-          required
-        />
-      </div>
+      {paymentMethod === "pix" && (
+        <div className="pix-details">
+          <h4>Pagamento PIX</h4>
+          {pixQrCode ? (
+            <>
+              <img src={pixQrCode} alt="QR Code PIX" />
+              <p>
+                <strong>Copia e Cola:</strong> {pixCopyCode}
+              </p>
+            </>
+          ) : (
+            <p>Gerando PIX...</p>
+          )}
+        </div>
+      )}
 
-      {/* Resumo da fatura */}
       <div className="payment-summary">
         <div className="invoice">
           <div className="invoice-item">
-            <span>Service: {selectedService.title}</span>
-            <span>${totalPrice.toFixed(2)}</span>
+            <span>Serviço: {selectedProvider.category}</span>
+            <span>R$ {totalPrice.toFixed(2)}</span>
           </div>
           <div className="invoice-total">
             <span>Total:</span>
-            <span>${totalPrice.toFixed(2)}</span>
+            <span>R$ {totalPrice.toFixed(2)}</span>
           </div>
         </div>
       </div>
 
-      {/* Botões de confirmar e cancelar */}
       <button className="confirm-btn" onClick={handlePaymentConfirm}>
-        Confirm Payment
+        Confirmar Pagamento
       </button>
       <button className="cancel-btn" onClick={onClose}>
-        Cancel
+        Cancelar
       </button>
     </div>
   );

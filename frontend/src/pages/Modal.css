@@ -120,7 +120,384 @@
     0% { transform: translateY(50px); }
     100% { transform: translateY(0); }
 }
+/* Container geral */
+.payment-form {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    position: fixed; /* Certifique-se de que está posicionado corretamente */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2000; /* Certifique-se de que está acima do modal */
+}
 
+/* Títulos e cabeçalhos */
+.payment-form h3 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Seção de seleção de método de pagamento */
+.payment-method-selection {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.payment-method-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 32%;
+    transition: background-color 0.3s ease;
+}
+
+.payment-method-btn.selected {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.payment-method-btn:hover {
+    background-color: #ddd;
+}
+
+.payment-method-btn span {
+    margin-left: 8px;
+}
+
+/* Estilo dos campos de entrada */
+.input-field {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.input-field label {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+/* Ajustando o campo do número do cartão para dar espaço ao ícone */
+.input-field input {
+    padding: 10px 40px 10px 45px;  /* Espaço extra para o ícone */
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+    font-size: 16px;
+}
+
+.input-field input::placeholder {
+    color: #ccc;
+}
+
+/* Estilo para o ícone do cartão dentro do campo de entrada */
+.card-icon {
+    position: absolute;
+    left: 15px;
+    top: 65%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: #888;
+}
+
+/* Formatação do número do cartão: separando em 4 dígitos */
+.input-field input.card-number {
+    letter-spacing: 2px;
+}
+
+/* Campo de CVV */
+.input-field .cvv {
+    width: 80px;
+}
+
+/* Campo de Data de Expiração ajustado */
+.input-field .expiry-date {
+    width: 100px;
+}
+
+/* Ajustes no campo de data */
+.date-selection {
+    margin-bottom: 20px;
+}
+
+.date-button {
+    margin-right: 10px;
+    padding: 10px 20px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.date-button:hover {
+    background-color: #ddd;
+}
+
+.selected-dates ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.remove-date-btn {
+    background: none;
+    border: none;
+    color: red;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Seção de resumo de pagamento */
+.payment-summary {
+    margin-top: 30px;
+    border-top: 1px solid #ccc;
+    padding-top: 20px;
+}
+
+/* Estilo da fatura */
+.invoice {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Resumo da fatura */
+.invoice .invoice-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.invoice .invoice-details {
+    font-size: 14px;
+    color: #666;
+}
+
+.invoice .invoice-total {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #333;
+}
+
+.invoice .invoice-total span {
+    font-size: 18px;
+    color: #4CAF50;
+}
+
+/* Botão de confirmação */
+.confirm-payment-btn {
+    padding: 12px 20px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+.confirm-payment-btn:hover {
+    background-color: #45a049;
+}
+
+/* Botão de fechar */
+.close-btn {
+    padding: 10px;
+    background-color: #f44336;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.close-btn:hover {
+    background-color: #e53935;
+}
+.pix-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+    z-index: 1000;
+    width: 400px;
+    text-align: center;
+  }
+  
+  .pix-details {
+    margin-top: 20px;
+  }
+  
+  .qr-code {
+    max-width: 200px;
+    margin: 10px auto;
+  }
+  
+  .pix-code {
+    font-family: monospace;
+    background: #f8f8f8;
+    padding: 10px;
+    border-radius: 5px;
+    word-break: break-all;
+    font-size: 0.9rem;
+  }
+  
+  .timer {
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #ff0000;
+  }
+  
+  .confirm-btn,
+  .close-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  
+  .confirm-btn {
+    background: #4caf50;
+    color: #fff;
+  }
+  
+  .close-btn {
+    background: #ff5252;
+    color: #fff;
+  }
+  
+/* Seção de erro ou sucesso */
+.payment-message {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.payment-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.payment-message.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+/* Animação para exibir as mensagens de erro ou sucesso */
+.payment-message {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Mobile responsivity */
+@media (max-width: 768px) {
+    .payment-form {
+        padding: 15px; /* Reduzir o padding em dispositivos móveis */
+    }
+
+    .payment-form h2 {
+        font-size: 20px; /* Tamanho da fonte do título em dispositivos móveis */
+    }
+
+    .payment-form input {
+        font-size: 14px; /* Tamanho da fonte dos campos em dispositivos móveis */
+    }
+
+    .payment-form button {
+        font-size: 14px; /* Tamanho da fonte do botão em dispositivos móveis */
+    }
+}
+
+/* Seção de validação de campos */
+.input-field.error input {
+    border-color: #f44336;
+}
+
+.input-field.error label {
+    color: #f44336;
+}
+
+.input-field.error input::placeholder {
+    color: #f44336;
+}
+
+/* Estilo do campo de input ao passar o mouse */
+.input-field input:focus {
+    outline: none;
+    border-color: #4CAF50;
+}
+
+/* Estilos para a animação dos campos */
+.input-field input:focus ~ label {
+    transform: translateY(-20px);
+    font-size: 12px;
+    color: #4CAF50;
+}
+
+/* Seção de pagamento concluído */
+.payment-success {
+    padding: 20px;
+    background-color: #d4edda;
+    border-radius: 8px;
+    color: #155724;
+    text-align: center;
+}
+
+.payment-success h4 {
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.payment-success p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.payment-success button {
+    padding: 12px 20px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.payment-success button:hover {
+    background-color: #45a049;
+}
 /* Cabeçalho do modal */
 .modal-header {
     display: flex;

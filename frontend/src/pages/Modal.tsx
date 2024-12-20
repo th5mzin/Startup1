@@ -1,274 +1,392 @@
 import React, { useState, useEffect } from "react";
-import ReactDOM from "react-dom"; // Importar ReactDOM para usar portais
 import "./Modal.css";
 import PaymentForm from "./PaymentForm";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-
-interface Service {
-  title: string;
-  price: string;
-  provider: string;
-  location: string;
-  description: string;
-  rating: number;
-  reviewsCount: number;
-  isPromoted: boolean;
-  images: string[];
+import axios from "axios";
+import { notifySuccess, notifyError } from "../utils/notifications";
+interface Provider {
+  _id: string; // Identificador único do provedor
+  firstName: string;
+  lastName: string;
   category: string;
+  email: string;
+  pricePerHour: number;
+  formattedAddress: string; // Contém city, state, country
+  providerId: string;
+  location: {
+    lat: number; // Latitude do provedor
+    lng: number; // Longitude do provedor
+  };
+  ratingStats: {
+    averageRating: number;
+    totalRatings: number;
+  };
+  servicesCompleted: number;
+  avatar: string;
+  isBusy: boolean;
 }
 
-interface PaymentInfo {
-  paymentMethod: string;
-  cardNumber?: string;
-  cvv?: string;
-  expiryDate?: string;
-  address: string;
-  selectedDates: string[];
-}
+
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void; // Adiciona a função de confirmação
-  selectedService: Service; // Ajuste o tipo conforme necessário
+  selectedProvider: Provider | null;
   totalPrice: number;
+  userAddress: string;
+  userLocation: { lat: number | null; lng: number | null };
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, selectedService, totalPrice }) => {
-  const [paymentType, setPaymentType] = useState("hour");
-  const [hours, setHours] = useState(1);
+const Modal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  selectedProvider,
+  totalPrice,
+  userLocation,
+}) => {
   const [calculatedPrice, setCalculatedPrice] = useState(totalPrice);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
-  const [selectedDates, setSelectedDates] = useState<string[]>([]);
-  const [showDateModal, setShowDateModal] = useState(false);
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [selectedHours, setSelectedHours] = useState<number>(0);
+  const [startTime, setStartTime] = useState<string>("07:00");
+  const [endTime, setEndTime] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [userAddress, setUserAddress] = useState<string>("");
 
   useEffect(() => {
-    if (selectedService) {
-      setCalculatedPrice(parseFloat(selectedService.price.replace("$", "").replace("/hour", "")));
+    if (selectedProvider) {
+      calculateTotalPrice(selectedHours);
+      updateEndTime();
     }
-  }, [selectedService]);
+  }, [selectedProvider, selectedHours, startTime]);
 
-  useEffect(() => {
-    calculateTotalPrice(paymentType, hours, selectedDates);
-  }, [paymentType, hours, selectedDates]);
+  const calculateTotalPrice = (numHours: number) => {
+    setCalculatedPrice(
+      selectedProvider ? selectedProvider.pricePerHour * numHours : 0
+    );
+  };
 
-  const handleDateSelection = (dates: [Date | null, Date | null]) => {
-    if (!dates) return;
+  const updateEndTime = () => {
+    const [startHour, startMinute] = startTime.split(":").map(Number);
+    const newEndHour = startHour + selectedHours;
 
-    const [start, end] = dates;
-
-    if (start && end) {
-      const diffInTime = end.getTime() - start.getTime();
-      const diffInDays = diffInTime / (1000 * 3600 * 24) + 1;
-
-      if (diffInDays > 30) {
-        alert("Você pode selecionar no máximo 30 dias.");
-        return;
-      }
-
-      const formattedDates = [];
-      for (let i = 0; i < diffInDays; i++) {
-        const date = new Date(start);
-        date.setDate(start.getDate() + i);
-        formattedDates.push(date.toISOString().split('T')[0]);
-      }
-
-      setSelectedDates(formattedDates);
-      setStartDate(start);
-      setEndDate(end);
-    } else if (start) {
-      setStartDate(start);
-      setSelectedDates([start.toISOString().split('T')[0]]);
+    if (newEndHour > 19) {
+      setError("O horário máximo é até 19:00.");
+      setEndTime("");
     } else {
-      setStartDate(null);
-      setEndDate(null);
-      setSelectedDates([]);
+      setError("");
+      setEndTime(
+        `${newEndHour.toString().padStart(2, "0")}:${startMinute
+          .toString()
+          .padStart(2, "0")}`
+      );
     }
   };
+  // Definindo o tipo para as chaves do objeto de abreviações de estado
+type StateName = 
+| "Acre"
+| "Alagoas"
+| "Amapá"
+| "Amazonas"
+| "Bahia"
+| "Ceará"
+| "Distrito Federal"
+| "Espírito Santo"
+| "Goiás"
+| "Maranhão"
+| "Mato Grosso"
+| "Mato Grosso do Sul"
+| "Minas Gerais"
+| "Pará"
+| "Paraíba"
+| "Paraná"
+| "Pernambuco"
+| "Piauí"
+| "Rio de Janeiro"
+| "Rio Grande do Norte"
+| "Rio Grande do Sul"
+| "Rondônia"
+| "Roraima"
+| "Santa Catarina"
+| "São Paulo"
+| "Sergipe"
+| "Tocantins";
 
-  const toggleDateModal = () => {
-    setShowDateModal(!showDateModal);
+// Definindo o objeto de abreviações de estado
+const stateAbbreviations: Record<StateName, string> = {
+"Acre": "AC",
+"Alagoas": "AL",
+"Amapá": "AP",
+"Amazonas": "AM",
+"Bahia": "BA",
+"Ceará": "CE",
+"Distrito Federal": "DF",
+"Espírito Santo": "ES",
+"Goiás": "GO",
+"Maranhão": "MA",
+"Mato Grosso": "MT",
+"Mato Grosso do Sul": "MS",
+"Minas Gerais": "MG",
+"Pará": "PA",
+"Paraíba": "PB",
+"Paraná": "PR",
+"Pernambuco": "PE",
+"Piauí": "PI",
+"Rio de Janeiro": "RJ",
+"Rio Grande do Norte": "RN",
+"Rio Grande do Sul": "RS",
+"Rondônia": "RO",
+"Roraima": "RR",
+"Santa Catarina": "SC",
+"São Paulo": "SP",
+"Sergipe": "SE",
+"Tocantins": "TO",
+};
+const handleConfirmRequest = () => {
+  if (!selectedHours) {
+    notifyError("Por favor, selecione um número de horas.");
+    return;
+  }
+
+  if (!startTime || !endTime) {
+    notifyError("Selecione o horário de início e fim.");
+    return;
+  }
+
+  if (!selectedProvider) {
+    notifyError("Prestador de serviço não selecionado.");
+    return;
+  }
+
+  if (!userAddress || !userLocation.lat || !userLocation.lng) {
+    notifyError("Preencha o endereço completo e verifique as coordenadas.");
+    return;
+  }
+
+  // Dividindo e validando o endereço no formato esperado
+  const addressParts = userAddress.split(" - ");
+  if (addressParts.length < 5) {
+    notifyError(
+      "Endereço inválido. Use o formato: CEP - Rua, Número, Bairro - Cidade - Estado - País."
+    );
+    return;
+  }
+
+  const streetParts = addressParts[1].split(",").map((part) => part.trim());
+  if (streetParts.length < 3) {
+    notifyError("Endereço inválido. Rua, Número e Bairro devem estar separados por vírgulas.");
+    return;
+  }
+  // Validação bem-sucedida, exibir o modal de pagamento
+  setShowPaymentForm(true);
+};
+
+const handlePaymentSuccess = async () => {
+  const addressParts = userAddress.split(" - ");
+  const streetParts = addressParts[1].split(",").map((part) => part.trim());
+
+  const address = {
+    zipCode: addressParts[0].trim(),
+    street: streetParts[0].trim(),
+    houseNumber: streetParts[1]?.trim() || "0",
+    neighborhood: streetParts[2]?.trim() || "",
+    city: addressParts[2].trim(),
+    state: addressParts[3].trim(),
+    country: addressParts[4].trim(),
   };
 
-  const calculateTotalPrice = (type: string, numHours: number, dates: string[]) => {
-    const hourlyRate = parseFloat(selectedService.price.replace("$", "").replace("/hour", ""));
-    const dailyRate = parseFloat(selectedService.price.replace("$", "").replace("/day", ""));
+  const requestPayload = {
+    providerId: selectedProvider!.providerId,
+    category: selectedProvider!.category,
+    pricePerHour: selectedProvider!.pricePerHour,
+    totalHours: selectedHours,
+    totalPrice: calculatedPrice,
+    address: address, // Agora está sendo usado aqui
+    location: userLocation,
+    schedule: {
+      startTime: new Date(`1970-01-01T${startTime}:00`).toISOString(),
+      endTime: new Date(`1970-01-01T${endTime}:00`).toISOString(),
+    },
+  };
 
-    if (type === "hour") {
-      setCalculatedPrice(hourlyRate * numHours);
-    } else if (type === "day") {
-      setCalculatedPrice(dailyRate);
+  const token = localStorage.getItem("token");
+  if (!token) {
+    notifyError("Você precisa estar logado.");
+    return;
+  }
+
+  try {
+    const response = await axios.post(
+      "http://localhost:5000/api/requests/create",
+      requestPayload,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    if (response.status === 201) {
+      notifySuccess("Solicitação criada com sucesso!");
+      setShowPaymentForm(false);
+      onClose();
     }
+  } catch (error) {
+    console.error("Erro ao criar solicitação:", error);
+    notifyError("Erro ao criar a solicitação. Tente novamente.");
+  }
+};
 
-    if (dates.length > 0) {
-      const totalDays = dates.length;
-      setCalculatedPrice(dailyRate * totalDays);
+const handleAutoLocate = () => {
+  if (!navigator.geolocation) {
+    notifyError("Geolocalização não é suportada pelo seu navegador.");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const { latitude, longitude } = position.coords;
+
+      try {
+        const response = await axios.get(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+        );
+
+        const { address } = response.data;
+        if (address) {
+          const houseNumber = address.house_number || "0";
+          const neighborhood = address.neighbourhood || "Centro";
+          const stateAbbreviation =
+  address.state && address.state in stateAbbreviations
+    ? stateAbbreviations[address.state as StateName]
+    : address.state || "";
+
+setUserAddress(
+  `${address.postcode || ""} - ${address.road || ""}, ${houseNumber}, ${neighborhood} - ${address.city || ""} - ${stateAbbreviation} - ${address.country || ""}`
+);
+
+          notifySuccess("Localização preenchida automaticamente!");
+        } else {
+          notifyError("Erro ao formatar o endereço.");
+        }
+      } catch (error) {
+        console.error("Erro ao obter endereço:", error);
+        notifyError("Erro ao obter endereço. Tente novamente.");
+      }
+    },
+    () => {
+      notifyError("Não foi possível obter a localização.");
     }
-  };
-
-  const handleConfirmRequest = () => {
-    setShowPaymentForm(true); // Exibe o PaymentForm
-  };
-
-  const handleConfirmPayment = (paymentInfo: PaymentInfo) => {
-    console.log("Pagamento confirmado:", paymentInfo);
-    setShowPaymentForm(false);
-    onClose(); // Fecha o modal principal se necessário
-  };
-
-  if (!isOpen) return null;
+  );
+};
+  if (!isOpen || !selectedProvider) return null;
 
   return (
-    <>
-      <div className="modal-overlay">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h2>{selectedService?.title}</h2>
-            <button className="modal-close" onClick={onClose}>
-              <span className="close-icon">X</span>
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h2>
+            {selectedProvider.firstName} {selectedProvider.lastName}
+          </h2>
+          <button className="modal-close" onClick={onClose}>
+            <span className="close-icon">X</span>
+          </button>
+        </div>
+
+        <div className="modal-body">
+          <div className="provider-details-container">
+            <div className="provider-details">
+              <h3>Detalhes do Prestador</h3>
+              <p>
+                <strong>Categoria:</strong> {selectedProvider.category}
+              </p>
+              <p>
+              <strong>Localização:</strong>{" "}
+{selectedProvider.formattedAddress 
+  ? selectedProvider.formattedAddress 
+  : "Localização não disponível"} 
+              </p>
+              <p>
+                <strong>Avaliação:</strong>{" "}
+                {selectedProvider.ratingStats.averageRating.toFixed(1)} estrelas (
+                {selectedProvider.ratingStats.totalRatings} avaliações)
+              </p>
+            </div>
+
+            <div className="price-summary">
+              <p>
+                <strong>Preço por Hora:</strong> R${" "}
+                {selectedProvider.pricePerHour.toFixed(2)}
+              </p>
+              <p>
+                <strong>Total:</strong> R$ {calculatedPrice.toFixed(2)}
+              </p>
+              {error && <p className="error-message">{error}</p>}
+            </div>
+          </div>
+
+          <div className="user-address">
+            <h3>Endereço do Usuário</h3>
+            <button onClick={handleAutoLocate} className="auto-locate-btn">
+              Usar Minha Localização
             </button>
-          </div>
-
-          <div className="modal-body">
-            <div className="service-image">
-              {selectedService.images.length > 0 ? (
-                <img
-                  src={selectedService.images[0]}
-                  alt={selectedService.title}
-                  className="service-img"
-                />
-              ) : (
-                <div className="no-image">No image available</div>
-              )}
-            </div>
-
-            <div className="service-details-container">
-              <div className="service-details">
-                <h3>Details</h3>
-                <p>{selectedService.description}</p>
-                <p><strong>Provider:</strong> {selectedService.provider}</p>
-                <p><strong>Location:</strong> {selectedService.location}</p>
-                <p><strong>Rating:</strong> {selectedService.rating} stars ({selectedService.reviewsCount} reviews)</p>
-              </div>
-
-              <div className="price-summary">
-                <p><strong>Price:</strong> ${calculatedPrice.toFixed(2)}</p>
-              </div>
-            </div>
-
-            <div className="service-options">
-              <div className="payment-type">
-                <button
-                  className={`payment-type-btn ${paymentType === "hour" ? "selected" : ""}`}
-                  onClick={() => {
-                    setPaymentType("hour");
-                    setHours(1); // Reset hours when changing to hourly payment
-                  }}
-                >
-                  Hourly
-                </button>
-                <button
-                  className={`payment-type-btn ${paymentType === "day" ? "selected" : ""}`}
-                  onClick={() => {
-                    setPaymentType("day");
-                    setSelectedDates([]); // Reset selected dates when changing to daily payment
-                  }}
-                >
-                  Daily
-                </button>
-              </div>
-
-              {paymentType === "hour" && (
-                <div className="hour-container">
-                  <h3 className="hour-title">Hours</h3>
-                  <select
-                    id="hourSelect"
-                    className="hour-selection"
-                    value={hours}
-                    onChange={(e) => {
-                      const selectedHours = parseInt(e.target.value, 10);
-                      setHours(selectedHours);
-                      calculateTotalPrice("hour", selectedHours, selectedDates);
-                    }}
-                  >
-                    <option value="">Select hours</option>
-                    {[...Array(8).keys()].map((i) => (
-                      <option key={i + 1} value={i + 1}>
-                        {i + 1}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              {paymentType === "day" && (
-                <div className="day-selection">
-                  <button onClick={toggleDateModal}>Select Dates</button>
-                </div>
-              )}
-            </div>
-
-            <div className="day-selection" style={{ position: 'relative' }}>
-    {showDateModal && (
-        <div className="datepicker-popup">
-            <DatePicker
-                selected={startDate}
-                onChange={(dates: [Date | null, Date | null]) => handleDateSelection(dates)}
-                startDate={startDate ?? undefined}
-                endDate={endDate ?? undefined}
-                selectsRange
-                inline
-                isClearable
-                placeholderText="Select date range"
+            <input
+              type="text"
+              value={userAddress}
+              onChange={(e) => setUserAddress(e.target.value)}
+              placeholder="Digite seu endereço completo"
+              className="user-address-input"
             />
-            <div className="selected-dates">
-                {selectedDates.length > 0 && (
-                    <span className="selected-dates-text">
-                        {selectedDates.length === 1
-                            ? `Selected date: ${selectedDates[0]}`
-                            : `From ${selectedDates[0]} to ${selectedDates[selectedDates.length - 1]}`}
-                    </span>
-                )}
-                {selectedDates.length === 0 && (
-                    <span className="no-dates-selected">No dates selected</span>
-                )}
-            </div>
-            <button className="confirm-dates-btn" onClick={toggleDateModal}>Confirm Dates</button>
-        </div>
-    )}
-</div>
-<div className="modal-footer">
-    <button className="confirm-btn" onClick={handleConfirmRequest}>
-        Proceed to Payment
-    </button>
-</div>
           </div>
-        </div>
-      </div>
 
-      {showPaymentForm && (
-        <>
-          <div className="overlay" onClick={() => setShowPaymentForm(false)}></div>
-          {ReactDOM.createPortal(
-            <PaymentForm
-              totalPrice={calculatedPrice}
-              onClose={() => {
-                setShowPaymentForm(false);
-                onClose();
-              }}
-              onConfirmPayment={handleConfirmPayment}
-              selectedService={selectedService}
-              selectedDates={selectedDates}
-            />,
-            document.body
+          <div className="time-selection">
+            <label htmlFor="hours">Selecione o Número de Horas:</label>
+            <select
+              id="hours"
+              value={selectedHours}
+              onChange={(e) => setSelectedHours(Number(e.target.value))}
+            >
+              <option value={0}>Selecione horas</option>
+              {Array.from({ length: 8 }, (_, i) => i + 1).map((hour) => (
+                <option key={hour} value={hour}>
+                  {hour} hora{hour > 1 ? "s" : ""}
+                </option>
+              ))}
+            </select>
+
+            <label htmlFor="start-time">Selecione o Horário de Início:</label>
+            <select
+              id="start-time"
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+            >
+              {Array.from({ length: 13 }, (_, i) => `${7 + i}:00`).map((time) => (
+                <option key={time} value={time}>
+                  {time}
+                </option>
+              ))}
+                       </select>
+          </div>
+
+          {endTime && (
+            <p>
+              <strong>Termina às:</strong> {endTime}
+            </p>
           )}
-        </>
-      )}
-    </>
-);
+
+          <button onClick={handleConfirmRequest}>Confirmar Solicitação</button>
+        </div>
+
+        {showPaymentForm && (
+  <PaymentForm
+    totalPrice={calculatedPrice}
+    onConfirmPayment={handlePaymentSuccess}
+    onClose={() => setShowPaymentForm(false)}
+    selectedProvider={selectedProvider}
+    selectedHours={selectedHours}
+    startTime={startTime}
+    endTime={endTime}
+  />
+)}
+      </div>
+    </div>
+  );
 };
 
 export default Modal;

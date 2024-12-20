@@ -1,4 +1,4 @@
-/* Reset para remover margens e paddings globais */
+/* Reset */
 *,
 *::before,
 *::after {
@@ -7,16 +7,15 @@
   box-sizing: border-box;
 }
 
-/* Body do dashboard */
+/* Body */
 body {
   font-family: 'Arial', sans-serif;
   background-color: #f7f7f7;
   color: #333;
   padding: 2rem;
-  margin: 0;
 }
 
-/* Container do perfil */
+/* Containers */
 .profile-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -29,39 +28,45 @@ body {
 /* Header */
 .header {
   display: flex;
-  justify-content: space-between; /* Mantém os botões nas extremidades */
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
 }
 
 .header h1 {
+  flex-grow: 1;
+  text-align: center;
   font-size: 2rem;
   color: #333;
-  flex-grow: 1; /* Faz o título ocupar o espaço restante */
-  text-align: center; /* Centraliza o título */
 }
 
-.back-btn, .logout-btn {
-  background-color: transparent;
+.back-btn,
+.logout-btn {
+  background: none;
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
 }
 
-/* Adicionando estilos para os botões */
 .back-btn {
-    color: #007bff; /* Cor do botão de voltar */
+  color: #007bff;
 }
 
 .logout-btn {
-    color: #dc3545; /* Cor do botão de logout */
+  background-color: #dc3545;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: transform 0.2s ease-in-out;
 }
 
-/* Dados do Usuário */
+/* User Info */
 .user-details {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  align-items: center;
   margin-bottom: 2rem;
   flex-wrap: wrap;
 }
@@ -72,7 +77,6 @@ body {
   border-radius: 50%;
   overflow: hidden;
   margin-right: 1rem;
-  margin-bottom: 1rem;
 }
 
 .avatar {
@@ -87,21 +91,363 @@ body {
 
 .user-info h2 {
   font-size: 1.8rem;
-  color: #333;
 }
 
 .user-info p {
-  font-size: 1rem;
   color: #666;
+  font-size: 1rem;
   margin-top: 0.5rem;
 }
 
-.user-stats {
+/* Requests */
+.request-card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.request-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-3px);
+}
+
+.request-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.request-header .request-avatar img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 1rem;
+}
+
+.request-details {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+}
+
+.request-details p {
+  margin: 0.5rem 0;
+}
+
+/* Status */
+.status {
+  font-weight: bold;
+}
+
+.status.pending {
+  color: #ffc107;
+}
+
+.status.accepted {
+  color: #28a745;
+}
+
+.status.rejected {
+  color: #dc3545;
+}
+
+.status.completed {
+  color: #17a2b8;
+}
+
+/* Close Icon */
+.close-icon {
+  font-size: 1.5rem;
+  color: #ff4d4f;
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+.rating-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
   justify-content: center;
-  margin-left: 1rem;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  width: 300px;
+}
+
+.rating-stars {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.star {
+  color: #ddd;
+  cursor: pointer;
+  font-size: 30px;
+}
+
+.star.filled {
+  color: gold;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #0d7aee;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+.close-icon {
+  font-size: 1.2rem;
+  color: #ff4d4f;
+  cursor: pointer;
+  margin-left: auto; /* Alinha à direita */
+  margin-right: 10px;
+}
+
+.close-icon:hover {
+  color: #d9363e;
+}
+
+/* Modal Background */
+.withdraw-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* Modal Content */
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Form Labels */
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Bank Info Styling */
+.bank-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.bank-info .input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.bank-info .input-group label {
+  margin-bottom: 5px;
+}
+
+/* PIX Info Styling */
+.pix-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.pix-info .input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.pix-info .input-group label {
+  margin-bottom: 5px;
+}
+
+/* Error Message */
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+/* Buttons */
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-buttons button {
+  padding: 10px 20px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.modal-buttons button:hover {
+  background-color: #0056b3;
+}
+
+.modal-buttons button:last-child {
+  background-color: #f44336;
+}
+
+.modal-buttons button:last-child:hover {
+  background-color: #d32f2f;
+}
+
+
+button {
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #007BFF;
+}
+.close-icon:hover {
+  color: #d9363e;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Centraliza verticalmente */
+  z-index: 9999;
+}
+
+.modal-content {
+  background: #fff;
+  width: 90%;
+  max-width: 400px;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.modal-buttons button {
+  padding: 10px 20px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.modal-buttons button:last-child {
+  background-color: #f44336;
+}
+
+.modal-buttons button:hover {
+  background-color: #0056b3;
+}
+
+.modal-buttons button:last-child:hover {
+  background-color: #d32f2f;
+}
+
+/* Rating Stars */
+.rating-stars {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.star {
+  color: #ddd;
+  cursor: pointer;
+  font-size: 30px;
+}
+
+.star.filled {
+  color: gold;
 }
 
 /* Balance Container */
@@ -144,787 +490,28 @@ body {
   cursor: pointer;
 }
 
-/* Requests Container */
-.requests-container {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  margin-top: 1rem;
-}
-
-/* Item de Request */
-.request-item {
-  background-color: #f9f9f9;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  width: 30%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  transition: box-shadow 0.3s ease, transform 0.2s ease;
-}
-
-.request-item:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transform: translateY(-3px);
-}
-
-.request-item h3 {
-  font-size: 1.2rem;
-  color: #333;
-}
-
-.request-item p {
-  font-size: 1.1rem;
-  color: #666;
-  margin-top: 0.5rem;
-}
-
-/* Agendamentos */
-.appointment-item {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 1.5rem;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s ease, transform 0.2s ease;
-  margin-bottom: 1rem;
-}
-
-.appointment-item:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transform: translateY(-3px);
-}
-
-.appointment-item h4 {
-  font-size: 1.3rem;
-  color: #333;
-}
-
-.appointment-item p {
-  font-size: 1rem;
-  color: #666;
-  margin-top: 0.5rem;
-}
-
-/* Contêiner para os botões Accept e Reject */
-.appointment-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-/* Estilos dos botões */
-.appointment-btn {
-  padding: 0.8rem 1.2rem;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
-}
-
-.appointment-btn.reject {
-  background-color: #dc3545;
-}
-
-.appointment-btn:hover {
-  background-color: #218838; /* Cor de hover para o botão "Accept" */
-}
-
-.appointment-btn.reject:hover {
-  background-color: #c82333; /* Cor de hover para o botão "Reject" */
-}
-
-/* Mensagens */
-.messages-container {
-  background-color: #fff;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-}
-
-.messages-container h3 {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 1.5rem;
-}
-
-.message-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.message-item {
-  background-color: #f9f9f9;
-  padding: 1.5rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s ease, transform 0.2s ease;
-}
-
-.message-item:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transform: translateY(-3px);
-}
-
-.message-item h4 {
-  font-size: 1.2rem;
-  color: #333;
-}
-
-.message-item p {
-  font-size: 1rem;
-  color: #666;
-}
-
-.message-item small {
-  font-size: 0.85rem;
-  color: #999;
-}
-
-/* Ações do Perfil */
-.profile-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
-}
-
-.cta-btn {
-  background-color: #007bff;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: transform 0.2s ease-in-out;
-  margin-left: 1rem;
-}
-
-.cta-btn:hover {
-  transform: scale(1.05);
-}
-
-.edit-profile-btn {
-  background-color: #007bff; /* Azul para edição */
-}
-
-.logout-btn {
-  background-color: #dc3545; /* Vermelho para logout */
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: transform 0.2s ease-in-out;
-}
-
-.logout-btn:hover {
-  transform: scale(1.05);
-}
-
-/* Responsividade */
+/* Responsiveness */
 @media (max-width: 768px) {
-    .profile-container {
-        padding: 1rem;
-        max-width: 100%; /* Garantir que a largura do container não ultrapasse a tela */
-    }
-
-    .header {
-      flex-direction: row; /* Garante que os botões fiquem lado a lado */
-      justify-content: space-between; /* Espaça os botões uniformemente */
-      align-items: center; /* Alinha verticalmente os itens */
-      margin-bottom: 1.5rem;
+  .profile-container {
+    padding: 1rem;
+    max-width: 100%;
+  }
+  .statistics-container {
+    padding: 0.75rem; /* Reduz o padding interno */
   }
 
+  .statistics-container h3 {
+    font-size: 1rem; /* Reduz o tamanho do título */
+  }
+
+  .statistics-container li {
+    font-size: 0.75rem; /* Reduz o tamanho do texto */
+  }
   .header h1 {
-      font-size: 1.6rem; /* Tamanho do título em dispositivos móveis */
-      margin: 0; /* Remove margens para melhor alinhamento */
-  }
-
-  .back-btn,
-  .logout-btn {
-      font-size: 1rem; /* Tamanho menor para dispositivos móveis */
-      padding: 0.3rem; /* Diminui o padding para botões menores */
-  }
-    .button-container {
-        display: flex; /* Usa flexbox para alinhar os botões */
-        justify-content: space-between; /* Espaça os botões uniformemente */
-        width: 100%; /* Garantir que ocupe a largura total */
-        margin-bottom: 1rem; /* Espaçamento abaixo dos botões */
-    }
-
-    .back-button,
-    .logout-button {
-        flex: 1; /* Faz com que os botões ocupem a mesma largura */
-        margin: 0 5px; /* Espaçamento entre os botões */
-        padding: 0.3rem; /* Diminui o padding para botões menores */
-        font-size: 0.85rem; /* Diminui o tamanho da fonte dos botões */
-        text-align: center; /* Centraliza o texto nos botões */
-        border: none; /* Remove bordas padrão */
-        border-radius: 5px; /* Bordas arredondadas */
-        background-color: #007bff; /* Cor de fundo do botão */
-        color: white; /* Cor do texto */
-        cursor: pointer; /* Muda o cursor para indicar que é clicável */
-        transition: background-color 0.3s; /* Transição suave para a cor de fundo */
-    }
-
-    .back-button:hover,
-    .logout-button:hover {
-        background-color: #0056b3; /* Cor de fundo ao passar o mouse */
-    }
-  
-    .user-details {
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 1.5rem;
-    }
-  
-    .avatar-container {
-      width: 80px; /* Diminuir a largura da foto */
-      height: 80px; /* Diminuir a altura da foto */
-      margin-bottom: 1rem;
-      border-radius: 50%; /* Torna a imagem redonda */
-      overflow: hidden; /* Garante que a imagem não transborde */
-    }
-  
-    .balance-container {
-      width: 50%; /* Ajustar a largura da carteira para ocupar menos espaço */
-      display: flex;
-      text-align: left;
-      justify-content: center; /* Centraliza o conteúdo da carteira */
-      align-items: center; /* Centraliza verticalmente */
-      margin: 0 auto; /* Centraliza horizontalmente */
-      margin-bottom: 1rem; /* Espaçamento abaixo da carteira */
-      padding: 0.4rem; /* Ajustar o padding para o mobile */
-      font-size: 0.9rem; /* Diminui o tamanho da fonte na carteira */
-    }
-  
-    .currency-symbol {
-      font-size: 1.2rem; /* Ajusta o tamanho do símbolo da moeda */
-    }
-  
-    .balance-value {
-      font-size: 1.2rem; /* Ajusta o tamanho do valor da carteira */
-      margin-left: 0.5rem;
-    }
-  
-    .wallet-icon {
-      right: -10px; /* Ajuste da posição do ícone */
-      font-size: 1rem;
-      margin-left: 0.5rem; /* Espaçamento entre o valor e o ícone */
-    }
-  
-    .requests-container {
-      flex-direction: column; /* Mudando para coluna no mobile */
-    }
-  
-    .request-item {
-      width: 100%; /* Garantir que os itens ocupem a largura total */
-      margin-bottom: 1rem;
-      padding: 0.5rem; /* Adiciona um pouco de padding */
-      border: 1px solid #ddd; /* Adiciona uma borda leve para separação */
-      border-radius: 5px; /* Bordas arredondadas */
-      background-color: #f9f9f9; /* Fundo leve */
-    }
-  
-    .appointments-container {
-      padding: 0.8rem;
-    }
-  
-    .appointment-item {
-      padding: 1rem;
-      border: 1px solid #ddd; /* Adiciona uma borda leve */
-      border-radius: 5px; /* Bordas arredondadas */
-      background-color: #f9f9f9; /* Fundo leve */
-      margin-bottom: 1rem; /* Espaçamento entre os itens */
-    }
-  
-    .appointment-item h4 {
-      font-size: 1rem; /* Tamanho do título do compromisso */
-      margin: 0; /* Remove margens para melhor alinhamento */
-    }
-  
-    .appointment-item p {
-      font-size: 0.85rem; /* Tamanho do texto do compromisso */
-      margin: 0.2rem 0; /* Espaçamento entre os parágrafos */
-    }
-  
-    .appointment-item .buttons-container button {
-      font-size: 0.8rem; /* Tamanho da fonte dos botões dentro do compromisso */
-      margin-right: 0.5rem; /* Espaçamento entre os botões */
-    }
-  
-    .uploaded-photos {
-      display: flex;
-      flex-wrap: wrap; /* Permite que as fotos se movam para a próxima linha */
-      justify-content: center; /* Centraliza as fotos */
-      margin-top: 1rem; /* Espaçamento acima das fotos */
-    }
-  
-    .photo-preview {
-      margin: 5px; /* Espaçamento entre as fotos */
-    }
-  
-    .remove-photo-button {
-      font-size: 0.7rem; /* Tamanho menor do botão de remoção */
-    }
-  
-    /* Estilos para o modal de logout */
-    .logout-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
-    }
-  
-    .logout-modal-content {
-      background: white;
-      padding: 1rem; /* Reduz o padding para o modal no mobile */
-      border-radius: 8px;
-      text-align: center;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-  
-    .logout-modal-actions {
-      margin-top: 1rem;
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-    }
-  
-    .confirm-logout-btn {
-      background-color: #dc3545; /* Vermelho para confirmar logout */
-      padding: 0.4rem 0.8rem; /* Ajusta o padding para o botão de confirmação */
-    }
-  
-    .cancel-logout-btn {
-      background-color: #6c757d; /* Cinza para cancelar */
-      padding: 0.4rem 0.8rem; /* Ajusta o padding para o botão de cancelamento */
-    }
-  
-    .confirm-logout-btn:hover {
-      background-color: #c82333; /* Cor de hover para confirmar logout */
-    }
-  
-    .cancel-logout-btn:hover {
-      background-color: #5a6268; /* Cor de hover para cancelar */
-    }
-  
-    /* Ajustes para o modal de suporte */
-    .support-modal-content {
-      padding: 1rem; /* Reduz o padding para o modal no mobile */
-    }
-  
-    /* Ajustes adicionais para garantir boa usabilidade em telas pequenas */
-    .appointment-actions {
-      display: flex;
-      flex-direction: column; /* Alinha os botões em coluna */
-      gap: 0.5rem; /* Espaçamento entre os botões */
-      margin-top: 1rem;
-    }
-  
-    .appointment-btn {
-      padding: 0.5rem; /* Ajusta o padding dos botões */
-      font-size: 0.9rem; /* Ajusta o tamanho da fonte dos botões */
-    }
-  }  
-   
-
-/* Estilos gerais do modal */
-.create-service-modal {
-position: fixed;
-top: 0;
-left: 0;
-right: 0;
-bottom: 0;
-background: rgba(0, 0, 0, 0.5);
-display: flex;
-justify-content: center;
-align-items: center;
-z-index: 1000;
-}
-
-.create-service-modal-content {
-background: white;
-padding: 20px;
-border-radius: 8px;
-width: 90%;
-max-width: 500px;
-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-.create-service-button {
-    display: flex;
-    justify-content: center; /* Centraliza o botão horizontalmente */
-    margin-bottom: 20px; /* Espaço abaixo do botão */
-  }
-/* Estilo para as imagens no modal */
-.photo-preview {
-    position: relative;
-    display: inline-block; /* Permite que as fotos fiquem lado a lado */
-    margin: 5px; /* Espaçamento entre as fotos */
-  }
-
-.photo-thumbnail {
-position: relative;
-margin: 5px;
-}
-.thumbnail {
-    width: 50px; /* Defina a largura desejada */
-    height: 50px; /* Defina a altura desejada */
-    object-fit: cover; /* Corta a imagem para manter a proporção */
-    border-radius: 4px; /* Borda arredondada, se desejado */
-  }
-
-.photo-thumbnail img {
-width: 80px; /* Ajuste a largura da imagem */
-height: auto; /* Mantém a proporção da imagem */
-border-radius: 4px;
-object-fit: cover; /* Para garantir que a imagem preencha o espaço */
-}
-
-.photo-thumbnail button {
-    position: absolute;
-    top: -5px; /* Ajuste da posição do botão */
-    right: -5px; /* Ajuste da posição do botão */
-    background: transparent;
-    color: rgb(43, 40, 40);
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    padding: 2px 5px;
-    font-size: 12px;
-    width: 24px; /* Largura do botão */
-    height: 24px; /* Altura do botão */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-/* Estilos dos botões */
-.cta-btn {
-background-color: #007bff;
-color: white;
-border: none;
-padding: 10px 15px;
-border-radius: 5px;
-cursor: pointer;
-margin-top: 10px;
-}
-
-.cta-btn:hover {
-background-color: #0056b3;
-}
-
-.cancel-btn {
-background-color: #dc3545;
-}
-
-.cancel-btn:hover {
-background-color: #c82333;
-}
-
-/* Modal para Resposta */
-.message-modal {
-position: fixed;
-top: 0;
-left: 0;
-right: 0;
-bottom: 0;
-display: flex;
-justify-content: center;
-align-items: center;
-background-color: rgba(0, 0, 0, 0.5);
-z-index: 1000;
-}
-
-.message-modal-content {
-background-color: #fff;
-padding: 20px;
-border-radius: 8px;
-max-width: 500px;
-width: 100%;
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.reply-textarea {
-width: 100%;
-padding: 10px;
-margin-top: 10px;
-border: 1px solid #ddd;
-border-radius: 4px;
-font-size: 14px;
-resize: none;
-}
-
-.message-modal-actions {
-display: flex;
-justify-content: space-between;
-margin-top: 20px;
-}
-.uploaded-photos {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px; /* Espaçamento entre as miniaturas */
-  }
-  
-  .photo-preview {
-    position: relative;
-  }
-  .remove-photo-button {
-    position: absolute;
-    top: 0;
-    right: 0;
-    background: none;
-    border: none;
-    color: rgb(255, 255, 255);
-    font-size: 14px; /* Ajuste o tamanho da fonte conforme necessário */
-    cursor: pointer;
-    padding: 2px; /* Um pouco de espaço ao redor do botão */
-  }
-/* Estilos para o Modal de Suporte */
-.support-modal {
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background-color: rgba(0, 0, 0, 0.5);
-display: flex;
-justify-content: center;
-align-items: center;
-z-index: 9999;
-}
-
-.support-modal-content {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    width: 80%;
-    max-width: 600px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  .support-modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-  
-  .support-modal-header h3 {
-    margin: 0;
-    font-size: 1.25rem;
-  }
-  
-  .support-modal-close-btn {
-    background: none;
-    border: none;
     font-size: 1.5rem;
-    cursor: pointer;
-    color: #888;
   }
-  
-  .support-modal-close-btn:hover {
-    color: #333;
+
+  .request-card {
+    padding: 1rem;
   }
-  
-  .support-modal-body {
-    margin-bottom: 20px;
-  }
-  
-  .support-modal-body p {
-    font-size: 1rem;
-    color: #333;
-  }
-  
-  .support-modal-footer {
-    text-align: center;
-  }
-  
-  .support-modal-footer button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-  }
-  
-  .support-modal-footer button:hover {
-    background-color: #0056b3;
-  }
-  
-  .support-modal-footer .cancel-btn {
-    background-color: #ccc;
-  }
-  
-  .support-modal-footer .cancel-btn:hover {
-    background-color: #aaa;
-  }
-  
-  /* Status dos agendamentos */
-  .accepted {
-    color: green;
-  }
-  
-  .rejected {
-    color: red;
-  }
-  
-  .pending {
-    color: orange;
-  }
-  
-  /* Estilos adicionais para o item de requisição */
-  .request-item h3 {
-    display: flex;
-    align-items: center;
-    font-size: 1.2rem;
-    color: #333;
-  }
-  
-  .request-item h3 svg {
-    margin-right: 0.5rem;
-    font-size: 1.5rem; /* Ajuste o tamanho do ícone */
-  }
-  
-  /* Modal de logout */
-  .logout-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
-  }
-  
-  .logout-modal-content {
-    background: white;
-    padding: 2rem;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  .logout-modal-actions {
-    margin-top: 1.5rem;
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-  }
-  
-  .confirm-logout-btn {
-    background-color: #dc3545;
-  }
-  
-  .cancel-logout-btn {
-    background-color: #6c757d;
-  }
-  
-  .confirm-logout-btn:hover {
-    background-color: #c82333;
-  }
-  
-  .cancel-logout-btn:hover {
-    background-color: #5a6268;
-  }
-  
-  /* Responsividade para telas menores */
-  @media (max-width: 480px) {
-    .header h1 {
-      font-size: 1.4rem;
-    }
-  
-    .balance-container {
-      padding: 0.4rem 0.8rem;
-    }
-  
-    .wallet-icon {
-      right: -10px; /* Ajuste da posição do ícone */
-      font-size: 1rem;
-    }
-  
-    .appointments-container {
-      padding: 0.8rem;
-    }
-  
-    .appointment-item {
-      padding: 1rem;
-    }
-  
-    .appointment-item h4 {
-      font-size: 1rem;
-    }
-  
-    .appointment-item p {
-      font-size: 0.85rem;
-    }
-  
-    .appointment-item .buttons-container button {
-      font-size: 0.8rem;
-    }
-  }
-  .recent-services-container {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #f9f9f9; /* Cor de fundo leve */
-    border-radius: 8px; /* Bordas arredondadas */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra leve */
-  }
-  
-  .recent-services-container h3 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    color: #333; /* Cor do texto */
-  }
-  
-  .recent-services-list {
-    list-style-type: none; /* Remove os marcadores da lista */
-    padding: 0; /* Remove o padding padrão */
-  }
-  
-  .recent-service-item {
-    padding: 10px;
-    border-bottom: 1px solid #ddd; /* Linha separadora entre os itens */
-  }
-  
-  .recent-service-item:last-child {
-    border-bottom: none; /* Remove a linha do último item */
-  }
-  
-  .recent-service-item h4 {
-    font-size: 1.2rem;
-    margin: 0 0 5px; /* Margem inferior */
-    color: #007bff; /* Cor do título do serviço */
-  }
-  
-  .recent-service-item p {
-    margin: 5px 0; /* Margem vertical entre os parágrafos */
-    color: #555; /* Cor do texto secundário */
-  }
-  
-  .recent-service-item p:last-child {
-    font-weight: bold; /* Destaca o status do serviço */
-  }
+}

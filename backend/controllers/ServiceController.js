@@ -2,65 +2,40 @@ const Service = require('../models/Service');
 const User = require('../models/User');  // Referência ao modelo de usuário
 
 // Função para calcular a duração total do serviço em horas
-function calculateServiceDuration(days) {
-  const hoursPerDay = 8;
-  return days * hoursPerDay;  // Máximo de 240 horas (30 dias * 8 horas por dia)
-}
+
 
 const createService = async (req, res) => {
-  const { providerId, pricePerHour, images, category, location, serviceDurationDays, startDate } = req.body;
+  const { providerId, pricePerHour, category, location} = req.body;
 
   try {
-    // Verificar se o fornecedor (providerId) existe
-    const provider = await User.findById(providerId);
+    // Verificar se o fornecedor (providerId) existe pelo campo personalizado
+    const provider = await User.findOne({ providerId }); // Alterado para findOne e busca por providerId
     if (!provider) {
       return res.status(400).json({ message: 'Fornecedor não encontrado.' });
     }
 
     // Verificar se o usuário é um prestador de serviço
-    if (provider.role !== 'Service Provider') {
+    if (provider.role !== 'service-provider') {
       return res.status(403).json({ message: 'Apenas prestadores de serviço podem criar serviços.' });
-    }
-
-    // Calcular a duração total do serviço (máximo de 30 dias * 8 horas/dia)
-    const totalServiceDuration = calculateServiceDuration(serviceDurationDays);
-
-    // Validar se a duração não excede o máximo permitido
-    if (totalServiceDuration > 240) {
-      return res.status(400).json({ message: 'A duração do serviço não pode exceder 30 dias (240 horas).' });
-    }
-
-    // Calcular a data de término
-    const endDate = new Date(startDate);
-    endDate.setHours(endDate.getHours() + totalServiceDuration);
-
-    // Validar se a data de início é anterior à data de término
-    if (new Date(startDate) >= endDate) {
-      return res.status(400).json({ message: 'A data de início deve ser anterior à data de término.' });
     }
 
     // Criar o novo serviço
     const newService = new Service({
-      provider: providerId,
-      firstName: provider.firstName, // Adicionando o primeiro nome do provedor
-      lastName: provider.lastName,     // Adicionando o sobrenome do provedor
+      provider: provider._id, // Use o _id do MongoDB para associar o serviço ao usuário
+      firstName: provider.firstName,
+      lastName: provider.lastName,
       pricePerHour,
-      images,
       category,
       location,
-      serviceDuration: totalServiceDuration,
-      startDate,
-      endDate,
-      status: 'pending', // Status inicial
+      status: 'active', // Status inicial
     });
 
-    // Salvar o serviço no banco de dados
     await newService.save();
 
-    return res.status(201).json(newService);
+    res.status(201).json({ message: 'Serviço criado com sucesso!', service: newService });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Erro ao criar o serviço.' });
+    console.error('Erro ao criar serviço:', error);
+    res.status(500).json({ message: 'Erro ao criar serviço.' });
   }
 };
 

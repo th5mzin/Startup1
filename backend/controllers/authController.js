@@ -3,111 +3,177 @@
  */
 const User = require('../models/User');
 const argon2 = require('argon2');
+const mongoose = require("mongoose");
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
-
+const { generateUniqueProviderId } = require('../models/User');
 // Função para gerar tokens JWT
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
 };
+const getCoordinates = async (address) => {
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+    address
+  )}&format=json&limit=1`;
+  const response = await axios.get(url, {
+    headers: {
+      "User-Agent": "YourAppName/1.0",
+    },
+  });
 
-// Registrar usuário
-const registerUser = async (req, res) => {
-  const { firstName, lastName, email, password, role, country, state, city, cpf } = req.body;
+  const data = response.data;
 
-  console.log('Tentando registrar usuário:', req.body);
+  if (data.length === 0) {
+    throw new Error("Não foi possível localizar o endereço.");
+  }
 
-  // Validação de erros
+  return {
+    latitude: parseFloat(data[0].lat),
+    longitude: parseFloat(data[0].lon),
+  };
+};
+/// Registrar usuário
+const registerUser  = async (req, res) => {
+  const {
+    firstName,
+    lastName,
+    email,
+    password,
+    role,
+    cpf,
+    category,
+    pricePerHour,
+    address, // Inclui o objeto de endereço completo no corpo da requisição
+  } = req.body;
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
   try {
-    // Verificar se o email já está registrado
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'Email já registrado.' });
+    // Verifica se o email já foi registrado
+    const existingUser  = await User.findOne({ email });
+    if (existingUser ) {
+      return res.status(400).json({ message: "Email já registrado." });
     }
 
-    // Criar novo usuário
-    const newUser = new User({
+    // Validações específicas para prestadores de serviço
+    if (role === "service-provider") {
+      if (!category || !pricePerHour) {
+        return res.status(400).json({
+          message: "Categoria e preço por hora são obrigatórios para prestadores de serviço.",
+        });
+      }
+      if (pricePerHour <= 0) {
+        return res.status(400).json({
+          message: "O preço por hora deve ser maior que zero.",
+        });
+      }
+    }
+
+    // Obter coordenadas do endereço
+    let coordinates;
+    try {
+      coordinates = await getCoordinates(`${address.street}, ${address.city}, ${address.state}, ${address.country}`);
+    } catch (error) {
+      return res.status(400).json({ message: error.message });
+    }
+
+    // Cria um novo usuário com base nos dados fornecidos
+    const newUser  = new User({
       firstName,
       lastName,
       email,
-      password, // Será hashada pelo middleware pre('save')
-      role,
-      country,
-      state,
-      city,
+      password,
+      role: role || "user",
       cpf,
+      category: role === "service-provider" ? category : undefined,
+      pricePerHour: role === "service-provider" ? parseFloat(pricePerHour) : undefined,
+      address: {
+        zipCode: address.zipCode.trim(),
+        street: address.street.trim(),
+        houseNumber: address.houseNumber.trim(),
+        neighborhood: address.neighborhood.trim(),
+        city: address.city.trim(),
+        state: address.state.trim(),
+        country: address.country.trim(),
+      },
+      balance: 0,
+      providerId: role === "service-provider" ? new mongoose.Types.ObjectId() : undefined,
+      location: {
+        type: "Point",
+        coordinates: [coordinates.longitude, coordinates.latitude], // Salva as coordenadas
+      },
     });
 
-    // Salvar usuário no banco de dados
-    await newUser.save();
-    console.log('Usuário registrado com sucesso:', newUser);
+    // Salva o novo usuário no banco de dados
+    await newUser .save();
 
-    // Gerar token JWT
-    const token = generateToken(newUser._id);
+    // Gera um token de autenticação
+    const token = generateToken(newUser ._id);
 
+    // Retorna o sucesso da operação
     return res.status(201).json({
-      message: 'Usuário registrado com sucesso.',
+      message: "Usuário registrado com sucesso.",
       token,
       user: {
-        firstName: newUser.firstName,
-        lastName: newUser.lastName,
-        email: newUser.email,
-        role: newUser.role,
+        id: newUser ._id,
+        firstName: newUser .firstName,
+        lastName: newUser .lastName,
+        email: newUser .email,
+        role: newUser .role,
+        address: newUser .address,
+        location: newUser .location, // Inclui a localização na resposta
       },
     });
   } catch (error) {
-    console.error('Erro ao registrar usuário:', error);
-    return res.status(500).json({ message: 'Erro no servidor. Tente novamente.' });
+    console.error("Erro ao registrar usuário:", error);
+
+    // Trata erros específicos do MongoDB (como duplicidade)
+    if (error.code === 11000) {
+      return res.status(400).json({ message: "Dados duplicados. Verifique suas informações." });
+    }
+
+    // Trata erros genéricos
+    return res.status(500).json({ message: "Erro no servidor. Tente novamente." });
   }
 };
-
 // Login do usuário
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
-  console.log('Tentando login com:', req.body);
-
-  // Validação de erros
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
   try {
-    // Buscar usuário pelo email
     const user = await User.findOne({ email });
     if (!user) {
-      console.log('Usuário não encontrado:', email);
       return res.status(400).json({ message: 'Usuário não encontrado.' });
     }
 
-    console.log('Usuário encontrado:', user);
-
-    // Comparar senha fornecida com o hash armazenado
     const isMatch = await argon2.verify(user.password, password);
-    console.log('Resultado da comparação de senha:', isMatch);
-
     if (!isMatch) {
-      console.log('Senha incorreta.');
       return res.status(400).json({ message: 'Senha incorreta.' });
     }
 
-    // Gerar token JWT
     const token = generateToken(user._id);
 
     return res.status(200).json({
       message: 'Login realizado com sucesso!',
       token,
       user: {
-        email: user.email,
+        id: user._id,
         firstName: user.firstName,
         lastName: user.lastName,
+        email: user.email,
         role: user.role,
+        category: user.category,
+        pricePerHour: user.pricePerHour,
+        location: user.location,
+        address: user.address,
       },
     });
   } catch (error) {
@@ -126,7 +192,7 @@ const verifyToken = async (req, res) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id).select('-password'); // Não retornar senha
+    const user = await User.findById(decoded.id).select('-password');
 
     if (!user) {
       return res.status(404).json({ message: 'Usuário não encontrado.' });

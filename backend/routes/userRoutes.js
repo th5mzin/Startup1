@@ -1,12 +1,27 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const userController = require('../controllers/userController'); // Controlador de usuário
+const {
+  getProfile,
+  getUserById,
+  updateUser,
+  deleteUser,
+  getAllUsers,
+} = require("../controllers/userController");
+const authMiddleware = require("../middleware/authMiddleware"); // Middleware para autenticação
 
-// Rotas para o usuário
-router.get('/:id', userController.getUserById);  // Pegar usuário por ID
-router.put('/:id', userController.updateUser);  // Atualizar usuário
-router.delete('/:id', userController.deleteUser);  // Deletar usuário
-router.get('/', userController.getAllUsers);  // Listar todos os usuários
-router.get('/profile', userController.getProfile);  // Perfil do usuário logado
+// Rota para obter o perfil do usuário autenticado
+router.get("/profile", authMiddleware, getProfile);
+
+// Rota para obter informações de um usuário por ID
+router.get("/:id", authMiddleware, getUserById);
+
+// Rota para atualizar informações de um usuário
+router.put("/:id", authMiddleware, updateUser);
+
+// Rota para deletar um usuário
+router.delete("/:id", authMiddleware, deleteUser);
+
+// Rota para listar todos os usuários (somente para administradores)
+router.get("/", authMiddleware, getAllUsers);
 
 module.exports = router;
