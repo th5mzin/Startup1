@@ -140,7 +140,7 @@ const stateAbbreviations: Record<StateName, string> = {
 "Sergipe": "SE",
 "Tocantins": "TO",
 };
-const handleConfirmRequest = () => {
+const handleConfirmRequest = async () => {
   if (!selectedHours) {
     notifyError("Por favor, selecione um número de horas.");
     return;
@@ -170,42 +170,51 @@ const handleConfirmRequest = () => {
     return;
   }
 
-  const streetParts = addressParts[1].split(",").map((part) => part.trim());
+  const [zipCode, streetDetails, city, state, country] = addressParts;
+  const streetParts = streetDetails.split(",").map((part) => part.trim());
   if (streetParts.length < 3) {
     notifyError("Endereço inválido. Rua, Número e Bairro devem estar separados por vírgulas.");
     return;
   }
-  // Validação bem-sucedida, exibir o modal de pagamento
-  setShowPaymentForm(true);
-};
 
-const handlePaymentSuccess = async () => {
-  const addressParts = userAddress.split(" - ");
-  const streetParts = addressParts[1].split(",").map((part) => part.trim());
+  // Construindo o objeto de endereço
+  const street = streetParts[0];
+  const houseNumber = streetParts[1] || "0";
+  const neighborhood = streetParts[2];
 
   const address = {
-    zipCode: addressParts[0].trim(),
-    street: streetParts[0].trim(),
-    houseNumber: streetParts[1]?.trim() || "0",
-    neighborhood: streetParts[2]?.trim() || "",
-    city: addressParts[2].trim(),
-    state: addressParts[3].trim(),
-    country: addressParts[4].trim(),
+    zipCode: zipCode.trim(),
+    street: street.trim(),
+    houseNumber: houseNumber.trim(),
+    neighborhood: neighborhood.trim(),
+    city: city.trim(),
+    state: state.trim(),
+    country: country.trim(),
   };
 
+  // Verificando se há dados faltantes no endereço
+  if (!address.city || !address.state || !address.country) {
+    notifyError("Endereço incompleto. Verifique os campos Cidade, Estado e País.");
+    return;
+  }
+
+  // Construindo o payload para o backend
   const requestPayload = {
-    providerId: selectedProvider!.providerId,
-    category: selectedProvider!.category,
-    pricePerHour: selectedProvider!.pricePerHour,
+    providerId: selectedProvider.providerId, // Incluindo o providerId
+    category: selectedProvider.category,
+    pricePerHour: selectedProvider.pricePerHour,
     totalHours: selectedHours,
     totalPrice: calculatedPrice,
-    address: address, // Agora está sendo usado aqui
+    address: address,
     location: userLocation,
     schedule: {
       startTime: new Date(`1970-01-01T${startTime}:00`).toISOString(),
       endTime: new Date(`1970-01-01T${endTime}:00`).toISOString(),
     },
   };
+  
+
+  console.log("Payload da solicitação:", requestPayload);
 
   const token = localStorage.getItem("token");
   if (!token) {
@@ -214,25 +223,19 @@ const handlePaymentSuccess = async () => {
   }
 
   try {
-    const response = await axios.post(
-      "http://localhost:5000/api/requests/create",
-      requestPayload,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+    const response = await axios.post("http://localhost:5000/api/requests/create", requestPayload, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     if (response.status === 201) {
       notifySuccess("Solicitação criada com sucesso!");
-      setShowPaymentForm(false);
+      setShowPaymentForm(true);
       onClose();
     }
   } catch (error) {
     console.error("Erro ao criar solicitação:", error);
-    notifyError("Erro ao criar a solicitação. Tente novamente.");
   }
 };
-
 const handleAutoLocate = () => {
   if (!navigator.geolocation) {
     notifyError("Geolocalização não é suportada pelo seu navegador.");
@@ -374,16 +377,18 @@ setUserAddress(
         </div>
 
         {showPaymentForm && (
-  <PaymentForm
-    totalPrice={calculatedPrice}
-    onConfirmPayment={handlePaymentSuccess}
-    onClose={() => setShowPaymentForm(false)}
-    selectedProvider={selectedProvider}
-    selectedHours={selectedHours}
-    startTime={startTime}
-    endTime={endTime}
-  />
-)}
+          <PaymentForm
+            totalPrice={calculatedPrice}
+            onConfirmPayment={() =>
+              notifySuccess("Pagamento realizado com sucesso!")
+            }
+            onClose={onClose}
+            selectedProvider={selectedProvider}
+            selectedHours={selectedHours}
+            startTime={startTime}
+            endTime={endTime}
+          />
+        )}
       </div>
     </div>
   );
