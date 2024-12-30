@@ -1,0 +1,230 @@
+/* Global Styles */
+body, input, select, button, h3, p, label {
+    font-family: 'League Spartan', sans-serif;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  /* Home Container */
+  .home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+    background-color: #f4f4f9;
+  }
+  
+  /* Minimal Header */
+  .minimal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    padding: 10px 20px;
+    background-color: transparent;
+  }
+  
+  .logo {
+    max-width: 150px;
+    height: auto;
+  }
+  
+  .login-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, transform 0.3s ease;
+  }
+  
+  .login-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+  }
+  
+  /* Location Section */
+  .location-section {
+    text-align: center;
+    margin: 30px 0;
+    width: 100%;
+  }
+  
+  .location-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, transform 0.3s ease;
+  }
+  
+  .location-button:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+  }
+  
+  .location-address {
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  /* Loading Spinner */
+  .loading-spinner {
+    margin: 20px auto;
+    border: 4px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 4px solid #007bff;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* No Providers Text */
+  .no-providers-text {
+    margin-top: 20px;
+    font-size: 1rem;
+    text-align: center;
+    color: #757575;
+  }
+  
+  /* Providers Grid */
+  .providers-grid {
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+    width: 100%;
+    max-width: 1200px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+  
+  /* Provider Card */
+  .provider-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+  
+  .provider-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+  
+  .provider-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+  }
+  
+  .provider-info {
+    margin-bottom: 1rem;
+  }
+  
+  .provider-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .provider-category,
+  .provider-price,
+  .provider-status {
+    font-size: 0.9rem;
+    color: #555;
+    margin: 0.5rem 0;
+  }
+  
+  .provider-btn {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, transform 0.3s ease;
+  }
+  
+  .provider-btn:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+  }
+  
+  /* Mobile Styles */
+  @media (max-width: 768px) {
+    .minimal-header {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .location-section {
+      margin: 20px 0;
+    }
+  
+    .location-button,
+    .login-button {
+      width: 100%;
+      max-width: 300px;
+      margin: 10px 0;
+    }
+  
+    .providers-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .logo {
+      max-width: 120px;
+    }
+  
+    .location-button {
+      font-size: 0.9rem;
+      padding: 8px 16px;
+    }
+  
+    .provider-card {
+      padding: 15px;
+    }
+  
+    .provider-btn {
+      width: 100%;
+    }
+  }
+  
