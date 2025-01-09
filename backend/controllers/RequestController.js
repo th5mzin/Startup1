@@ -197,59 +197,6 @@ const respondToRequest = async (req, res) => {
     return res.status(500).json({ message: "Erro interno no servidor." });
   }
 };
-
-// Buscar mensagens de uma solicitação
-const getMessages = async (req, res) => {
-  const { requestId } = req.params;
-
-  try {
-    if (!validateObjectId(requestId)) {
-      return res.status(400).json({ message: "ID de solicitação inválido." });
-    }
-
-    const request = await Request.findById(requestId).populate("messages.from", "firstName lastName email");
-    if (!request) {
-      return res.status(404).json({ message: "Solicitação não encontrada." });
-    }
-
-    res.status(200).json({ messages: request.messages });
-  } catch (error) {
-    handleError(res, error, "Erro ao buscar mensagens.");
-  }
-};
-
-// Enviar mensagem em uma solicitação confirmada
-const sendMessage = async (req, res) => {
-  const { requestId } = req.params;
-  const { content } = req.body;
-
-  try {
-    if (!validateObjectId(requestId)) {
-      return res.status(400).json({ message: "ID de solicitação inválido." });
-    }
-
-    if (!content || content.length > 500) {
-      return res.status(400).json({ message: "Conteúdo da mensagem é obrigatório e deve ter no máximo 500 caracteres." });
-    }
-
-    const request = await Request.findById(requestId);
-    if (!request) {
-      return res.status(404).json({ message: "Solicitação não encontrada." });
-    }
-
-    request.messages.push({
-      from: req.user.id,
-      content,
-      sentAt: new Date(),
-    });
-
-    await request.save();
-    res.status(200).json({ message: "Mensagem enviada com sucesso.", messages: request.messages });
-  } catch (error) {
-    handleError(res, error, "Erro ao enviar mensagem.");
-  }
-};
-
 // Selecionar prestador
 const selectProvider = async (req, res) => {
   const { requestId } = req.params;
@@ -429,19 +376,27 @@ const getRequestsByUser = async (req, res) => {
     res.status(500).json({ message: "Erro ao buscar solicitações." });
   }
 };
-// Método para buscar provedores
 const getProviders = async (req, res) => {
-  const { category, city, state, country } = req.query;
+  const { category, city, state, country, lat, lng } = req.query;
 
   try {
-    // Validação dos parâmetros obrigatórios
-    if (!city || !state || !country) {
+    if (!city || !state || !country || !lat || !lng) {
       return res.status(400).json({
-        message: "Os parâmetros city, state e country são obrigatórios.",
+        message: "Os parâmetros city, state, country, lat e lng são obrigatórios.",
       });
     }
 
-    // Normaliza as strings para busca
+    const latitude = parseFloat(lat);
+    const longitude = parseFloat(lng);
+
+    if (isNaN(latitude) || isNaN(longitude)) {
+      return res.status(400).json({
+        message: "As coordenadas fornecidas são inválidas.",
+      });
+    }
+
+    const radiusInMeters = 10 * 1000;
+
     const normalizeString = (str) =>
       str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
 
@@ -449,31 +404,16 @@ const getProviders = async (req, res) => {
     const normalizedState = normalizeString(state);
     const normalizedCountry = normalizeString(country);
 
-    // Obter coordenadas da localização
-    const { lat, lng } = await getCoordinates(normalizedCity, normalizedState, normalizedCountry);
-
-    // Validação das coordenadas
-    if (typeof lat !== "number" || typeof lng !== "number" || isNaN(lat) || isNaN(lng)) {
-      return res.status(400).json({ message: "Coordenadas inválidas ou não encontradas." });
-    }
-
-    // Define um raio fixo de 10 km
-    const radiusInMeters = 10 * 1000; // 10 km em metros
-
-    // Montar a query
     const query = {
       role: "service-provider",
       ...(category && category !== "all" && { category }),
       location: {
         $geoWithin: {
-          $centerSphere: [[lng, lat], radiusInMeters / 6378100], // 6378100 = Raio médio da Terra em metros
+          $centerSphere: [[longitude, latitude], radiusInMeters / 6378100],
         },
       },
     };
 
-    console.log("Query gerada:", query);
-
-    // Buscar provedores
     const providers = await User.find(query).select(
       "firstName lastName category email pricePerHour location ratingStats avatar isBusy address"
     );
@@ -482,7 +422,6 @@ const getProviders = async (req, res) => {
       return res.status(404).json({ message: "Nenhum provedor encontrado." });
     }
 
-    // Formatar resposta para incluir endereço e avaliações
     const formattedProviders = providers.map((provider) => ({
       providerId: provider._id,
       firstName: provider.firstName,
@@ -492,7 +431,9 @@ const getProviders = async (req, res) => {
       avatar: provider.avatar,
       isBusy: provider.isBusy,
       ratingStats: provider.ratingStats,
-      formattedAddress: `${provider.address?.city || "Cidade não definida"}-${provider.address?.state || "Estado não definido"}, ${provider.address?.country || "País não definido"}`,
+      formattedAddress: `${provider.address?.city || "Cidade não definida"}-${
+        provider.address?.state || "Estado não definido"
+      }, ${provider.address?.country || "País não definido"}`,
     }));
 
     res.status(200).json({ providers: formattedProviders });
@@ -501,6 +442,7 @@ const getProviders = async (req, res) => {
     res.status(500).json({ message: "Erro ao buscar provedores." });
   }
 };
+
 const getRequestsByProvider = async (req, res) => {
   const { providerId } = req.params;
 
@@ -741,8 +683,6 @@ module.exports = {
   getRequestsByProvider,
   respondToRequest,
   selectProvider,
-  sendMessage,
-  getMessages,
   completeRequest,
   cancelRequest,
   createDispute,

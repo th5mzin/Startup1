@@ -6,142 +6,127 @@ body, input, select, button, h3, p, label {
 body {
   margin: 0;
   padding: 0;
-  font-family: 'League Spartan', sans-serif;
-  overflow-x: hidden;
-  background-color: #f4f4f9; /* Fundo leve e neutro */
+  background-color: #f4f4f9;
   transition: background-color 0.3s, color 0.3s;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
+/* Home Container */
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding: 20px;
+  background-color: #f4f4f9;
 }
 
-/* Header */
-.header {
+/* Minimal Header */
+.minimal-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  height: auto;
-  padding: 10px 20px;
-  background-color: transparent;
-  color: white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.header .logo img {
-  max-width: 300px; /* Aumenta o tamanho da logo */
-  height: auto;
-  object-fit: contain;
-}
-
-.nav-links {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  gap: 1rem;
-}
-
-.nav-links a,
-.cta-btn {
-  text-decoration: none;
-  color: white;
-  font-size: 1rem;
-  font-weight: bold;
-  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  transition: color 0.3s ease, transform 0.3s ease;
-}
-
-.cta-btn {
-  background-color: #0056b3;
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.cta-btn:hover {
-  background-color: #004080;
-  transform: scale(1.05);
-}
-
-/* Search Bar */
-.search-bar-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
-  margin-top: 15px;
-}
-
-.search-bar {
-  display: flex;
-  align-items: center;
+  flex-wrap: wrap;
   width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-  border-radius: 50px;
-  border: 1px solid #ccc;
-  padding: 0 1rem;
-  background-color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.search-input {
-  flex-grow: 1;
-  padding: 0.75rem;
-  border-radius: 50px;
-  border: none;
-  outline: none;
-  font-size: 1rem;
+  max-width: 1200px;
+  padding: 20px 10px;
   background-color: transparent;
+  gap: 15px;
 }
 
-.search-btn {
-  background: transparent;
-  border: none;
-  color: #333;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-/* Filters Section */
-.filters {
-  padding: 1rem;
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+/* Logo */
+.logo {
+  max-width: 180px; /* Aumentei o tamanho da logo */
+  height: auto;
   margin-bottom: 20px;
 }
 
-.filter-label {
-  margin-right: 0.5rem;
+/* Buttons Container */
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Login Button */
+.login-button {
+  width: 100px;
+  padding: 10px 15px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
   font-size: 1rem;
   font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out, transform 0.3s ease;
 }
 
-.filter-select {
-  padding: 10px;
-  font-size: 14px;
-  border: 1px solid #ccc;
+/* Login Button Hover */
+.login-button:hover {
+  background-color: #218838; /* Realce verde no hover */
+  transform: scale(1.05); /* Efeito de destaque */
+}
+
+/* Location Button */
+.location-button {
+  width: 250px;
+  padding: 10px 15px;
+  background-color: #28a745;
+  color: white;
+  border: none;
   border-radius: 8px;
-  width: 100%;
-  max-width: 300px;
-  background: #ffffff;
-  color: black;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.3s ease-in-out, transform 0.3s ease;
 }
 
-.filter-select:hover {
-  border-color: #007bff;
+/* Location Button Hover */
+.location-button:hover {
+  background-color: #218838; /* Realce verde no hover */
+  transform: scale(1.05); /* Efeito de destaque */
+}
+
+/* Location Address */
+.location-address {
+  margin-top: 10px;
+  font-size: 1rem;
+  color: #555;
+  text-align: center;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  margin: 20px auto;
+  border: 4px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 4px solid #007bff;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+      transform: rotate(0deg);
+  }
+  100% {
+      transform: rotate(360deg);
+  }
+}
+
+/* No Providers Text */
+.no-providers-text {
+  margin-top: 20px;
+  font-size: 1rem;
+  text-align: center;
+  color: #757575;
 }
 
 /* Providers Grid */
@@ -149,62 +134,12 @@ body {
   display: grid;
   gap: 1rem;
   padding: 1rem;
+  width: 100%;
+  max-width: 1200px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
 
-.providers-grid.grid-view {
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Para o Grid */
-}
-
-.providers-grid.list-view {
-  grid-template-columns: 1fr; /* Apenas uma coluna para lista no desktop */
-}
-
-/* Estilo do Card em Modo Lista */
-.provider-card.list-card {
-  display: flex;
-  align-items: center;
-  padding: 1rem;
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-
-.provider-card.list-card:hover {
-  transform: scale(1.02);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-}
-
-.provider-card.list-card .provider-image-gallery {
-  flex-shrink: 0;
-  margin-right: 1rem;
-}
-
-.provider-card.list-card .provider-image {
-  width: 100px;
-  height: 100px;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.provider-card.list-card .provider-info {
-  flex-grow: 1;
-  text-align: left;
-}
-
-.provider-card.list-card .provider-info h3 {
-  font-size: 1.2rem;
-  margin-bottom: 0.5rem;
-}
-
-.provider-card.list-card .provider-info p {
-  font-size: 0.9rem;
-  color: #555;
-  margin: 0.25rem 0;
-}
-
-
+/* Provider Card */
 .provider-card {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
@@ -264,130 +199,39 @@ body {
   transform: scale(1.05);
 }
 
-/* Toggle Buttons */
-.toggle-view-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.toggle-btn {
-  background: #f9f9f9;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 10px 20px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
-  font-size: 14px;
-  color: #333;
-}
-
-.toggle-btn.active {
-  background: #007bff;
-  color: white;
-  transform: scale(1.05);
-}
-
-.toggle-btn:hover {
-  background: #e0e0e0;
-  color: #007bff;
-}
-
-/* Address Input */
-.address-container {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
-.address-input {
-  flex: 2;
-  min-width: 300px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 14px;
-  background-color: #fff;
-  color: #333; /* Texto do campo address */
-}
-
-.address-input::placeholder {
-  color: #aaa; /* Cor do placeholder */
-}
 /* Mobile Styles */
 @media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    height: auto;
-    padding: 10px;
-  }
-  .toggle-view-buttons {
-    display: none; /* Remove the toggle buttons */
-  }
-  .header .logo img {
-    max-width: 200px; /* Ajuste do tamanho da logo no mobile */
+  .minimal-header {
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
   }
 
-  .nav-links {
-    justify-content: center;
-    margin-top: 10px;
+  .buttons-container {
+      gap: 10px;
+  }
+
+  .login-button,
+  .location-button {
+      width: 100%;
+      max-width: 300px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
   }
 
   .providers-grid {
-    grid-template-columns: 1fr; /* Apenas uma coluna no mobile */
-  }
-
-  .provider-card {
-    width: 90%; /* Ajusta o tamanho no mobile */
-    margin: 0 auto;
-  }
-
-  .filters {
-    padding: 10px;
-  }
-
-  .filter-select {
-    width: 100%;
-  }
-
-  .toggle-view-buttons {
-    justify-content: center;
-    margin-bottom: 10px;
+      grid-template-columns: 1fr;
   }
 }
 
-/* Small Mobile (Max 480px) */
 @media (max-width: 480px) {
-  .header {
-    flex-direction: column;
+  .logo {
+      max-width: 150px; /* Aumentei um pouco para o mobile */
   }
 
-  .header .logo img {
-    max-width: 150px; /* Ajusta a logo para dispositivos muito pequenos */
-  }
-
-  .address-container {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .geolocation-btn {
-    width: 100%;
-  }
-
-  .provider-card {
-    padding: 15px;
-  }
-
-  .provider-btn {
-    width: 100%;
-  }
-
-  .toggle-view-buttons {
-    flex-direction: column;
-    gap: 5px;
+  .login-button,
+  .location-button {
+      font-size: 0.9rem;
+      padding: 8px 14px;
   }
 }

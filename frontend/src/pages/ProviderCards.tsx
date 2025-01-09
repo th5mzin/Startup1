@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { FaStar, FaMapMarkerAlt } from "react-icons/fa";
+import { FaStar, FaMapMarkerAlt, FaComments, FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import "./ProviderCards.css";
 
 interface Provider {
   _id: string;
@@ -13,28 +14,33 @@ interface Provider {
     averageRating: number;
     totalRatings: number;
   };
+  providerId: string; // Adiciona providerId aqui
 }
 
 interface ProviderCardsProps {
   providers: Provider[];
+  onChatOpen: (providerId: string) => void; // Callback para abrir o chat
 }
 
-const ProviderCards: React.FC<ProviderCardsProps> = ({ providers }) => {
+const ProviderCards: React.FC<ProviderCardsProps> = ({ providers, onChatOpen }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [startX, setStartX] = useState<number | null>(null);
 
+  // Navegação para o próximo card
   const handleNext = () => {
     if (currentIndex < providers.length - 1) {
       setCurrentIndex(currentIndex + 1);
     }
   };
 
+  // Navegação para o card anterior
   const handlePrevious = () => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
     }
   };
 
+  // Captura o início do swipe (toque ou mouse)
   const handleTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
     if ("touches" in e) {
       setStartX(e.touches[0].clientX);
@@ -43,6 +49,7 @@ const ProviderCards: React.FC<ProviderCardsProps> = ({ providers }) => {
     }
   };
 
+  // Captura o movimento do swipe e realiza a navegação
   const handleTouchMove = (e: React.TouchEvent | React.MouseEvent) => {
     if (!startX) return;
 
@@ -64,57 +71,87 @@ const ProviderCards: React.FC<ProviderCardsProps> = ({ providers }) => {
     }
   };
 
+  // Verifica se há provedores disponíveis
+  if (!providers.length) {
+    return <p className="no-providers-text">Nenhum provedor disponível no momento.</p>;
+  }
+
+  // Provedor atual
   const currentProvider = providers[currentIndex];
-  const [city, state] = currentProvider.formattedAddress.split(" - ").slice(-2); // Extraindo cidade e estado
 
   return (
-    <div
-      className="w-3/4 bg-white shadow-lg rounded-lg p-6 relative mt-6"
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onMouseDown={handleTouchStart}
-      onMouseMove={handleTouchMove}
-      onMouseUp={() => setStartX(null)}
-    >
-      <img
-        src={currentProvider.avatar}
-        alt={`${currentProvider.firstName} ${currentProvider.lastName}`}
-        className="rounded-full w-32 h-32 mx-auto mb-4"
-      />
-      <h2 className="text-lg font-bold text-center">
-        {currentProvider.firstName} {currentProvider.lastName}
-      </h2>
-      <p className="text-gray-500 text-center">{currentProvider.category}</p>
-      <p className="text-gray-700 text-center font-semibold">
-        R$ {currentProvider.pricePerHour}/hora
-      </p>
-      <div className="flex justify-center mt-2">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <FaStar
-            key={i}
-            color={i < Math.ceil(currentProvider.ratingStats.averageRating) ? "#FFD700" : "#ccc"}
-          />
-        ))}
-        <span className="ml-2 text-sm text-gray-600">
-          {currentProvider.ratingStats.averageRating.toFixed(1)} (
-          {currentProvider.ratingStats.totalRatings} avaliações)
-        </span>
-      </div>
-      <p className="text-gray-500 text-center mt-2 flex items-center justify-center gap-2">
-        <FaMapMarkerAlt /> {city.trim()}, {state.trim()}
-      </p>
-      <div className="flex justify-between mt-6">
+    <div className="provider-cards-container">
+      {/* Setas para navegação no mobile */}
+      <button
+        className="arrow-button arrow-left"
+        onClick={handlePrevious}
+        disabled={currentIndex === 0}
+      >
+        <FaArrowLeft />
+      </button>
+      <button
+        className="arrow-button arrow-right"
+        onClick={handleNext}
+        disabled={currentIndex === providers.length - 1}
+      >
+        <FaArrowRight />
+      </button>
+
+      {/* Card atual */}
+      <div
+        className={`provider-card ${startX ? "swipe-mobile" : ""}`}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onMouseDown={handleTouchStart}
+        onMouseMove={handleTouchMove}
+        onMouseUp={() => setStartX(null)}
+      >
+        <img
+          src={currentProvider.avatar}
+          alt={`${currentProvider.firstName} ${currentProvider.lastName}`}
+          className="provider-avatar"
+        />
+        <h2 className="provider-name">
+          {currentProvider.firstName} {currentProvider.lastName}
+        </h2>
+        <p className="provider-category">{currentProvider.category}</p>
+        <p className="provider-price">R$ {currentProvider.pricePerHour}/hora</p>
+        <div className="provider-rating">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <FaStar
+              key={i}
+              color={i < Math.ceil(currentProvider.ratingStats.averageRating) ? "#FFD700" : "#ccc"}
+            />
+          ))}
+          <span className="provider-rating-stats">
+            {currentProvider.ratingStats.averageRating.toFixed(1)} (
+            {currentProvider.ratingStats.totalRatings} avaliações)
+          </span>
+        </div>
+        <p className="provider-address">
+          <FaMapMarkerAlt /> {currentProvider.formattedAddress}
+        </p>
         <button
+          className="provider-chat-button"
+          onClick={() => onChatOpen(currentProvider.providerId)}
+        >
+          <FaComments /> Abrir Chat
+        </button>
+      </div>
+
+      {/* Botões de navegação no desktop */}
+      <div className="navigation-buttons">
+        <button
+          className="navigation-button"
           onClick={handlePrevious}
           disabled={currentIndex === 0}
-          className="bg-gray-300 px-4 py-2 rounded flex items-center gap-2 disabled:opacity-50"
         >
           Anterior
         </button>
         <button
+          className="navigation-button"
           onClick={handleNext}
           disabled={currentIndex === providers.length - 1}
-          className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-blue-600 transition"
         >
           Próximo
         </button>
